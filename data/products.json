@@ -1,1 +1,8 @@
-[{"title":"Great Book"},{"title":"Great Book 2"},{"title":"Great Book 3"}]
+[
+  {
+    "title": "A Book",
+    "imageUrl": "https://pngimg.com/uploads/book/book_PNG2111.png",
+    "description": "A great book",
+    "price": "19.99"
+  }
+]
