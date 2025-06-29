@@ -1,8 +1,9 @@
 [
   {
-    "title": "A Book",
+    "title": "Great Book",
     "imageUrl": "https://pngimg.com/uploads/book/book_PNG2111.png",
-    "description": "A great book",
-    "price": "19.99"
+    "description": "An amazing book.",
+    "price": "29.99",
+    "id": "0.692700348307272"
   }
 ]

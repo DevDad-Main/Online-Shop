@@ -44,4 +44,14 @@ module.exports = class Product {
   static fetchAll(cb) {
     getProductsFromFile(cb);
   }
+
+  static findByID(id, cb) {
+    getProductsFromFile((products) => {
+      // Trying to find in all of our products if the current product we are on
+      // ID matches the one we pass into the function of essentially trying to
+      // look at the details of on the website
+      const product = products.find((p) => p.id === id);
+      cb(product);
+    });
+  }
 };
