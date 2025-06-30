@@ -44,7 +44,9 @@ module.exports = class Cart {
         // Essentially copying the old array and putting it back into it but with the added updatedProduct
         cart.products = [...cart.products, updatedProduct];
       }
-      cart.totalPrice += productPrice;
+      // Adding the + before the productPrice acutally converts it to a number. Which i never knew haha
+      cart.totalPrice += +productPrice;
+
       fs.writeFile(p, JSON.stringify(cart), (err) => {
         console.log(err);
       });
