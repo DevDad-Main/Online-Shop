@@ -22,7 +22,8 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
-  const product = new Product(title, imageUrl, description, price);
+  // We need to pass in null here, as we are creating a new product and when we save on the next line that will skip straight to adding a new product instead of checking if this id exists which it dosen't as we are in the post add product route
+  const product = new Product(null, title, imageUrl, description, price);
   product.save();
   res.redirect("/");
 };
@@ -56,7 +57,26 @@ exports.getEditProduct = (req, res, next) => {
   });
 };
 
-exports.postEditProduct = (req, res, next) => {};
+exports.postEditProduct = (req, res, next) => {
+  // Retreiving this from the hidden input only if we are in edit mode
+  const prodId = req.body.productId;
+  const updatedTitle = req.body.title;
+  const updatedPrice = req.body.price;
+  const updatedImageUrl = req.body.imageUrl;
+  const updatedDesc = req.body.description;
+  // Now when we pass in the id in the save method we will enter the if block which in turns updates the current product we are on with the new details we pass in
+  const updatedProudct = new Product(
+    prodId,
+    updatedTitle,
+    updatedImageUrl,
+    updatedDesc,
+    updatedPrice,
+  );
+  // Overrides product
+  updatedProudct.save();
+  // Reroute back to /admin/products page
+  res.redirect("/admin/products");
+};
 
 exports.getProducts = (req, res, next) => {
   Product.fetchAll((products) => {

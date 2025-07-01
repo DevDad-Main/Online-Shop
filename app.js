@@ -7,6 +7,7 @@ const errorController = require("./controllers/error");
 
 const app = express();
 const PORT = 3000;
+const rootPath = path.join(path.dirname(require.main.filename), "public");
 
 app.set("view engine", "ejs");
 // This is not neccessary as the default location express looks for is.
@@ -14,7 +15,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(rootPath));
 
 // This will automatically consider our routes in the admin.js file.
 // When filing the request through the middlewares
