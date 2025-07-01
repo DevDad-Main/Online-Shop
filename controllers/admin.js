@@ -4,15 +4,12 @@ exports.getAddProduct = (req, res, next) => {
   // This wont't specifically move onto the next middleware.
   // As we need to specify the next keyword;
   // res.sendFile(path.join(rootDir, "views", "add-product.html"));
-  res.render("admin/add-product", {
+  res.render("admin/edit-product", {
     pageTitle: "Add Product",
+    // This can stay like this as this is only sed to highlight
+    // The naviagtion item, the page we are on essentially
     path: "/admin/add-product",
-    // Boolean used to activate the specific style sheets
-    formCSS: true,
-    // Boolean used to activate the specific style sheets
-    productCSS: true,
-    // Boolean passed to our ejs template to add the class active for this page
-    activeAddProduct: true,
+    editing: false,
   });
   // console.log(rootDir);
 };
@@ -29,6 +26,37 @@ exports.postAddProduct = (req, res, next) => {
   product.save();
   res.redirect("/");
 };
+
+exports.getEditProduct = (req, res, next) => {
+  // This extracted value is always a string so we need to do a check for that also
+  const editMode = req.query.edit;
+
+  // Redundant we can remove it later as if we are here in this controller then we are obviously going to want to edit a product
+  if (!editMode) {
+    return res.redirect("/");
+  }
+  const productId = req.params.productId;
+  Product.findByID(productId, (product) => {
+    // We need to add a check incase we dont have a product
+    // Because then we can redirect the user
+    if (!product) {
+      return res.redirect("/");
+    }
+
+    res.render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      // This can stay like this as this is only sed to highlight
+      // The naviagtion item, the page we are on essentially
+      path: "/admin/edit-product",
+      // variable we can pass over and check if to see if we
+      // click the save button, we should try to add the product or edit and update
+      editing: editMode,
+      product: product,
+    });
+  });
+};
+
+exports.postEditProduct = (req, res, next) => {};
 
 exports.getProducts = (req, res, next) => {
   Product.fetchAll((products) => {
