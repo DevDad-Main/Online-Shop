@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-
+const Cart = require("./cart");
 const p = path.join(
   path.dirname(require.main.filename),
   "data",
@@ -46,6 +46,22 @@ module.exports = class Product {
           console.log(err);
         });
       }
+    });
+  }
+
+  static deleteByID(id) {
+    getProductsFromFile((products) => {
+      // Storing the product we want to delet, so we can use it later
+      const product = products.find((prod) => prod.id === id);
+      // Filter will return all of the products that match our criteria and put them into a new array.
+      // Here we want it to return all the products that don't equal to the id we are currently on, essentialyl removing it from our array
+      const updatedProducts = products.filter((p) => p.id !== id);
+      fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+        if (!err) {
+          // Remove from the cart as the product dosent exist
+          Cart.deleteProduct(id, product.price);
+        }
+      });
     });
   }
 

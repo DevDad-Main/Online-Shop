@@ -87,3 +87,10 @@ exports.getProducts = (req, res, next) => {
     });
   });
 };
+
+exports.postDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  // call back so we only get redirected back to the admin products page once we have successffully deleted a product
+  Product.deleteByID(prodId);
+  res.redirect("/admin/products");
+};

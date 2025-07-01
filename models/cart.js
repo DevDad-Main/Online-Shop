@@ -52,4 +52,37 @@ module.exports = class Cart {
       });
     });
   }
+
+  static deleteProduct(id, productPrice) {
+    fs.readFile(p, (err, fileContent) => {
+      if (err) {
+        return; // Can't find cart so we return
+      }
+      // Spread operator to assign all of the file contents into updatedCart
+      const updatedCart = { ...JSON.parse(fileContent) };
+      const product = updatedCart.products.find((prod) => prod.id === id);
+      // Don't this, only for readability
+      const productQty = product.quantity;
+      // Removing the products from the cart * by how many that are in the cart
+      updatedCart.products = updatedCart.products.filter(
+        (prod) => prod.id !== id,
+      );
+      updatedCart.totalPrice -= productPrice * productQty;
+
+      fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
+        console.log(err);
+      });
+    });
+  }
+
+  static getCart(cb) {
+    fs.readFile(p, (err, fileContent) => {
+      const cart = JSON.parse(fileContent);
+      if (err) {
+        cb(null);
+      } else {
+        cb(cart);
+      }
+    });
+  }
 };
