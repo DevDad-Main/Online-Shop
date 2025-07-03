@@ -28,9 +28,7 @@
                                 </div>
                                 <div class="card__actions">
                                     <a href="/products/<%= product.id %>" class="btn">Details</a>
-                                    <!-- We need to pass in a second parameter which will be the product as in loops these EJS 
-                                        templates won't work or load, so we need to pass in the data -->
-                                    <%- include('../includes/add-to-cart.ejs', { product: product}) %>
+                                    <%- include('../includes/add-to-cart.ejs', {product: product}) %>
                                 </div>
                             </article>
                             <% } %>

@@ -20,7 +20,7 @@ module.exports = class Cart {
       }
       // Analyze the cart => Find exisiting product.
       const exisitingProductIndex = cart.products.findIndex(
-        (prod) => p.id === id,
+        (prod) => prod.id === id,
       );
       const exisitingProduct = cart.products[exisitingProductIndex];
       let updatedProduct;
@@ -61,7 +61,12 @@ module.exports = class Cart {
       // Spread operator to assign all of the file contents into updatedCart
       const updatedCart = { ...JSON.parse(fileContent) };
       const product = updatedCart.products.find((prod) => prod.id === id);
-      // Don't this, only for readability
+
+      if (!product) {
+        return; // As we dont't have a prroduct that is in the cart
+      }
+
+      // Don't need this, only for readability
       const productQty = product.quantity;
       // Removing the products from the cart * by how many that are in the cart
       updatedCart.products = updatedCart.products.filter(

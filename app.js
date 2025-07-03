@@ -7,7 +7,7 @@ const errorController = require("./controllers/error");
 
 const app = express();
 const PORT = 3000;
-const rootPath = path.join(path.dirname(require.main.filename), "public");
+const rootPath = path.join(__dirname, "public");
 
 app.set("view engine", "ejs");
 // This is not neccessary as the default location express looks for is.

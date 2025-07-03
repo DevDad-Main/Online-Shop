@@ -1,25 +1,25 @@
 <%- include('../includes/head.ejs') %>
-    <link rel="stylesheet" href="/css/product.css">
-  </head>
+    <link href="/css/forms.css" rel="stylesheet">
+    <link href="/css/product.css" rel="stylesheet">
+    </head>
 
     <body>
         <%- include('../includes/navigation.ejs') %>
         <main>
-          <% if (products.length > 0) { %>
-              <ul>
-                <% products.forEach(p => { %>
-                <li>
-                  <p><%= p.productData.title %> (<%= p.qty%>)</p>
-                  <form action="/cart-delete-item" method="POST">
-                    <input type="hidden" value="<%= p.productData.id %>" name="productId" name="productId">
-                    <button class="btn" type="submit">Delete</button>
-                  </form>
-                </li>
-
-                <% }); %>
-              </ul>
-          <% } else { %>
-           <h1>No Products in Cart!</h1>
-          <% } %>
+            <% if (products.length > 0) { %>
+                <ul>
+                    <% products.forEach(p => { %>
+                        <li>
+                            <p><%= p.productData.title %> (<%= p.qty %>)</p>
+                            <form action="/cart-delete-item" method="POST">
+                                <input type="hidden" value="<%= p.productData.id %>" name="productId">
+                                <button class="btn" type="submit">Delete</button>
+                            </form>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <h1>No Products in Cart!</h1>
+            <% } %>
         </main>
         <%- include('../includes/end.ejs') %>
