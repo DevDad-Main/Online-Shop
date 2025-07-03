@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const errorController = require("./controllers/error");
+const mongoConnect = require("./util/database").mongoConnect;
 
 const app = express();
 const PORT = 3000;
@@ -30,4 +31,8 @@ app.use(shopRoutes);
 // This will handle all http methods and not just ehg et or post
 app.use(errorController.get404);
 
-app.listen(PORT);
+// app.listen(PORT);
+
+mongoConnect(() => {
+  app.listen(PORT);
+});
