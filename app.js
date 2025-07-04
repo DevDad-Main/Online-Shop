@@ -5,10 +5,12 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const errorController = require("./controllers/error");
 const mongoConnect = require("./util/database").mongoConnect;
+const User = require("./models/user");
 
 const app = express();
 const PORT = 3000;
 const rootPath = path.join(__dirname, "public");
+const userId = "6867d9ea21f33fffdcc32e84";
 
 app.set("view engine", "ejs");
 // This is not neccessary as the default location express looks for is.
@@ -17,6 +19,18 @@ app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(rootPath));
+
+app.use((req, res, next) => {
+  User.findById(userId)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  next();
+});
 
 // This will automatically consider our routes in the admin.js file.
 // When filing the request through the middlewares

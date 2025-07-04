@@ -7,7 +7,11 @@ class Product {
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
-    this._id = new mongodb.ObjectId(`${_id}`);
+    // Ternarary here as if we dont always define the id at the end
+    // This will always create a new mongo ID which we don't want.
+    // so we add a check if we dont have an id we return null otherwise make one.
+    // Then we won't have any more issues in our save method now
+    this._id = _id ? new mongodb.ObjectId(`${_id}`) : null;
   }
 
   save() {
@@ -74,6 +78,17 @@ class Product {
           console.log(err);
         })
     );
+  }
+
+  static deleteById(prodId) {
+    const db = getDb();
+    return db
+      .collection("products")
+      .deleteOne({
+        _id: new mongodb.ObjectId(`${prodId}`),
+      })
+      .then((result) => console.log(result))
+      .catch((err) => console.log(err));
   }
 }
 
