@@ -23,13 +23,14 @@ app.use(express.static(rootPath));
 app.use((req, res, next) => {
   User.findById(userId)
     .then((user) => {
-      req.user = user;
+      // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
+      // Now we can call methods on req.user
+      req.user = new User(user.name, user.email, user.cart, user._id);
       next();
     })
     .catch((err) => {
       console.log(err);
     });
-  next();
 });
 
 // This will automatically consider our routes in the admin.js file.

@@ -69,14 +69,13 @@ exports.getIndex = (req, res, next) => {
 //     });
 //   });
 // };
-//
-// exports.postCart = (req, res, next) => {
-//   const prodId = req.body.productId;
-//   Product.findByID(prodId, (product) => {
-//     Cart.addProduct(prodId, product.price);
-//   });
-//   res.redirect("/cart");
-// };
+
+exports.postCart = (req, res, next) => {
+  const prodId = req.body.productId;
+  const product = Product.findById(prodId).then((product) => {
+    return re.user.addToCart(product);
+  });
+};
 //
 // exports.postCartDeleteProduct = (req, res, next) => {
 //   const prodId = req.body.productId;

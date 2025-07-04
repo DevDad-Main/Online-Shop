@@ -2,7 +2,7 @@ const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
 class Product {
-  constructor(title, price, description, imageUrl, _id) {
+  constructor(title, price, description, imageUrl, _id, userId) {
     this.title = title;
     this.price = price;
     this.description = description;
@@ -12,6 +12,7 @@ class Product {
     // so we add a check if we dont have an id we return null otherwise make one.
     // Then we won't have any more issues in our save method now
     this._id = _id ? new mongodb.ObjectId(`${_id}`) : null;
+    this.userId = userId;
   }
 
   save() {

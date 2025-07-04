@@ -22,8 +22,16 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
-  // We need to pass in null here, as we are creating a new product and when we save on the next line that will skip straight to adding a new product instead of checking if this id exists which it dosen't as we are in the post add product route
-  const product = new Product(title, price, description, imageUrl);
+
+  // Passing in null here for the User Id as we don't have it
+  const product = new Product(
+    title,
+    price,
+    description,
+    imageUrl,
+    null,
+    req.user._id,
+  );
 
   product
     .save()
