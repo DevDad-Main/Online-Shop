@@ -11,7 +11,7 @@ router.get("/products", shopController.getProducts);
 // Then we also exxtract those details later.
 // Essentiallyy tells express to look for a route like /products/1
 // -> Allowing use to extract the id
-// router.get("/products/:id", shopController.getProduct);
+router.get("/products/:id", shopController.getProduct);
 //
 // router.get("/cart", shopController.getCart);
 //

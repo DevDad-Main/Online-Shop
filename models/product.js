@@ -1,20 +1,38 @@
+const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
 class Product {
-  constructor(title, price, description, imageUrl) {
+  constructor(title, price, description, imageUrl, _id) {
     this.title = title;
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
+    this._id = new mongodb.ObjectId(`${_id}`);
   }
 
   save() {
     const db = getDb();
+    let dbOperation;
+    if (this._id) {
+      //Update product if the id is set.
+      dbOperation = db
+        .collection("products")
+        // Applying a filter to check if _id == this._id above
+        .updateOne(
+          { _id: this._id },
+          {
+            // This works as the Product is just an object and the key:value pairs are the same as.
+            // MongoDb expects
+            $set: this,
+          },
+        );
+    } else {
+      // Otherwise it's not so we create a new product
+      dbOperation = db.collection("products").insertOne(this);
+    }
     // Telling Mongo db which collection we want to work with
     // If it dosen't exist, just like our Database if it dosen't exist MongoDb will create it on the fly for us
-    return db
-      .collection("products")
-      .insertOne(this)
+    return dbOperation
       .then((result) => {
         console.log(result);
       })
@@ -38,6 +56,24 @@ class Product {
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  static findById(prodId) {
+    const db = getDb();
+    return (
+      db
+        .collection("products")
+        // We need to use mongodbs ObjectId conversion as javascript cant translate the bson format it is stored in, so now we can compare the ids
+        .find({ _id: new mongodb.ObjectId(`${prodId}`) })
+        .next()
+        .then((product) => {
+          console.log(product);
+          return product;
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    );
   }
 }
 

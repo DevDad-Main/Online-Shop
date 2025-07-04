@@ -15,21 +15,23 @@ exports.getProducts = (req, res, next) => {
     })
     .catch((err) => console.log(err));
 };
-//
-// exports.getProduct = (req, res, next) => {
-//   // This has to be exactly the same as we defined in the route :id
-//   // Allowing us to extract it from the url parameters
-//   const prodID = req.params.id;
-//   Product.findByID(prodID, (product) => {
-//     console.log(product);
-//     res.render("shop/product-detail", {
-//       product: product,
-//       pageTitle: product.title,
-//       path: "/products",
-//     });
-//   });
-// };
-//
+
+exports.getProduct = (req, res, next) => {
+  // This has to be exactly the same as we defined in the route :id
+  // Allowing us to extract it from the url parameters
+  const prodID = req.params.id;
+  Product.findById(prodID)
+    .then((product) => {
+      console.log(product);
+      res.render("shop/product-detail", {
+        product: product,
+        pageTitle: product.title,
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
 exports.getIndex = (req, res, next) => {
   Product.fetchAll()
     .then((products) => {
