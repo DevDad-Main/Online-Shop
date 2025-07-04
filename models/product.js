@@ -65,22 +65,36 @@ class Product {
 
   static findById(prodId) {
     const db = getDb();
-    return (
-      db
-        .collection("products")
-        // We need to use mongodbs ObjectId conversion as javascript cant translate the bson format it is stored in, so now we can compare the ids
-        .find({ _id: new mongodb.ObjectId(`${prodId}`) })
-        .next()
-        .then((product) => {
-          console.log(product);
-          return product;
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-    );
+    return db
+      .collection("products")
+      .find({ _id: new mongodb.ObjectId(prodId) })
+      .next()
+      .then((product) => {
+        console.log(product);
+        return product;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
-
+  // static findById(prodId) {
+  //   const db = getDb();
+  //   return (
+  //     db
+  //       .collection("products")
+  //       // We need to use mongodbs ObjectId conversion as javascript cant translate the bson format it is stored in, so now we can compare the ids
+  //       .find({ _id: new mongodb.ObjectId(`${prodId}`) })
+  //       .next()
+  //       .then((product) => {
+  //         console.log(product);
+  //         return product;
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       })
+  //   );
+  // }
+  //
   static deleteById(prodId) {
     const db = getDb();
     return db

@@ -19,7 +19,7 @@ exports.getProducts = (req, res, next) => {
 exports.getProduct = (req, res, next) => {
   // This has to be exactly the same as we defined in the route :id
   // Allowing us to extract it from the url parameters
-  const prodID = req.params.id;
+  const prodID = req.params.productId;
   Product.findById(prodID)
     .then((product) => {
       console.log(product);
@@ -45,45 +45,43 @@ exports.getIndex = (req, res, next) => {
       console.log(err);
     });
 };
-//
-// exports.getCart = (req, res, next) => {
-//   Cart.getCart((cart) => {
-//     Product.fetchAll((product) => {
-//       const cartProducts = [];
-//       for (product of product) {
-//         const cartProductData = cart.products.find(
-//           (prod) => prod.id === product.id,
-//         );
-//         if (cartProductData) {
-//           cartProducts.push({
-//             productData: product,
-//             qty: cartProductData.quantity,
-//           });
-//         }
-//       }
-//       res.render("shop/cart", {
-//         path: "/cart",
-//         pageTitle: "Your Cart",
-//         products: cartProducts,
-//       });
-//     });
-//   });
-// };
+
+exports.getCart = (req, res, next) => {
+  req.user
+    .getCart()
+    .then((products) => {
+      res.render("shop/cart", {
+        path: "/cart",
+        pageTitle: "Your Cart",
+        products: products,
+      });
+    })
+    .catch((err) => console.log(err));
+};
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  const product = Product.findById(prodId).then((product) => {
-    return re.user.addToCart(product);
-  });
+  Product.findById(prodId)
+    .then((product) => {
+      return req.user.addToCart(product);
+    })
+    .then((result) => {
+      console.log(result);
+      res.redirect("/cart");
+    });
+  // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
+  // Now we can call methods on req.user
 };
 //
-// exports.postCartDeleteProduct = (req, res, next) => {
-//   const prodId = req.body.productId;
-//   Product.findByID(prodId, (product) => {
-//     Cart.deleteProduct(prodId, product.price);
-//     res.redirect("/cart");
-//   });
-// };
+exports.postCartDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  req.user
+    .deleteItemFromCart(prodId)
+    .then((result) => {
+      res.redirect("/cart");
+    })
+    .catch((err) => console.log(err));
+};
 //
 // exports.getOrders = (req, res, next) => {
 //   res.render("shop/orders", {

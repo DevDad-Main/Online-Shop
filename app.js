@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(rootPath));
 
 app.use((req, res, next) => {
-  User.findById(userId)
+  User.findById("6867d9ea21f33fffdcc32e84")
     .then((user) => {
       // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
       // Now we can call methods on req.user
