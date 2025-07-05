@@ -99,6 +99,34 @@ class User {
     );
   }
 
+  addOrder() {
+    // We dont't need to pass any parameters as we will be accessing the cart which resides as a param on the User
+    // Putting it into a new colletion
+
+    const db = getDb();
+    return (
+      db
+        .collection("orders")
+        .insertOne(this.cart)
+        // Once we have removed the items from our cart by plcing them in the orders collection
+        // We essentially make our cart an empty object again (Default)
+        .then((result) => {
+          // Clearing the cart in the user Object
+          this.cart = { items: [] };
+
+          // Then we also clear it from the current users database
+          return db.collection("users").updateOne(
+            {
+              _id: new mongodb.ObjectId(`${this._id}`),
+            },
+            {
+              $set: { cart: { items: [] } },
+            },
+          );
+        })
+    );
+  }
+
   static findById(userId) {
     const db = getDb();
     return db

@@ -15,7 +15,7 @@ const userId = "6867d9ea21f33fffdcc32e84";
 app.set("view engine", "ejs");
 // This is not neccessary as the default location express looks for is.
 // cwd, current working directory + the /views/ folder
-app.set("views", "views");
+app.set("views", "src/views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(rootPath));
