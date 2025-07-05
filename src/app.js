@@ -10,11 +10,10 @@ const User = require("./models/user");
 const app = express();
 const PORT = 3000;
 const rootPath = path.join(__dirname, "public");
-const userId = "6867d9ea21f33fffdcc32e84";
 
 app.set("view engine", "ejs");
-// This is not neccessary as the default location express looks for is.
-// cwd, current working directory + the /views/ folder
+//WARN: cwd, current working directory + the /views/ folder
+//WARN: As i have changed he project structure we have to specify the src/views no so we can still render our static views
 app.set("views", "src/views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
