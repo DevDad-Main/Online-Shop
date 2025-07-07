@@ -100,31 +100,55 @@ class User {
   }
 
   addOrder() {
-    // We dont't need to pass any parameters as we will be accessing the cart which resides as a param on the User
-    // Putting it into a new colletion
-
+    //NOTE:
+    //1. We get the cart which is essentially an array of products.
+    //2. We create an order with that data
+    //3. We then insert this order into our orders collection
+    //4. Then we know we were successfuly as we tner the then block so we clear up our exisiting cart
     const db = getDb();
-    return (
-      db
-        .collection("orders")
-        .insertOne(this.cart)
-        // Once we have removed the items from our cart by plcing them in the orders collection
-        // We essentially make our cart an empty object again (Default)
-        .then((result) => {
-          // Clearing the cart in the user Object
-          this.cart = { items: [] };
+    // We only create the order object once we know the getCart has returned us the data we need
+    return this.getCart().then((products) => {
+      const order = {
+        items: products,
+        user: {
+          _id: new mongodb.ObjectId(`${this._id}`),
+          name: this.name,
+          email: this.email,
+        },
+      };
+      return (
+        db
+          .collection("orders")
+          .insertOne(order)
+          // Once we have removed the items from our cart by plcing them in the orders collection
+          // We essentially make our cart an empty object again (Default)
+          .then((result) => {
+            // Clearing the cart in the user Object
+            this.cart = { items: [] };
 
-          // Then we also clear it from the current users database
-          return db.collection("users").updateOne(
-            {
-              _id: new mongodb.ObjectId(`${this._id}`),
-            },
-            {
-              $set: { cart: { items: [] } },
-            },
-          );
-        })
-    );
+            // Then we also clear it from the current users database
+            return db.collection("users").updateOne(
+              {
+                _id: new mongodb.ObjectId(`${this._id}`),
+              },
+              {
+                $set: { cart: { items: [] } },
+              },
+            );
+          })
+      );
+    });
+  }
+
+  getOrders() {
+    const db = getDb();
+    return db
+      .collection("orders")
+      .find({
+        // This will find the user Id by looking at the user in the orders and find the nested _id property
+        "user._id": new mongodb.ObjectId(`${this._id}`),
+      })
+      .toArray();
   }
 
   static findById(userId) {
