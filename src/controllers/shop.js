@@ -1,5 +1,4 @@
 const Product = require("../models/product");
-const Cart = require("../models/cart");
 
 exports.getProducts = (req, res, next) => {
   // fetchAll Takes in a function -> Higher order function and then it will execute this once it has done

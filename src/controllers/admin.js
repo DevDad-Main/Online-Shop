@@ -23,17 +23,15 @@ exports.postAddProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
 
-  // Passing in null here for the User Id as we don't have it
-  const product = new Product(
-    title,
-    price,
-    description,
-    imageUrl,
-    null,
-    req.user._id,
-  );
+  const product = new Product({
+    title: title,
+    price: price,
+    description: description,
+    imageUrl: imageUrl,
+  });
 
   product
+    // Don't need to change our save method here as this actually comes from mongoose
     .save()
     .then((result) => {
       console.log("Created Product");
