@@ -1,10 +1,11 @@
 const Product = require("../models/product");
 
 exports.getProducts = (req, res, next) => {
-  // fetchAll Takes in a function -> Higher order function and then it will execute this once it has done
-  // As our .fetchAll uses asynchronous functions so we use this callback to deal with our products data
-  Product.fetchAll()
+  //INFO: Find here does not return us a cursor it returns us all the products
+  //WARN: We should turn this into a cursor when working with large amounts of data, or manipulate .find() to limit the data returned using pagination
+  Product.find()
     .then((products) => {
+      console.log(products);
       res.render("shop/product-list", {
         prods: products,
         docTitle: "All Products",
@@ -18,6 +19,7 @@ exports.getProducts = (req, res, next) => {
 exports.getProduct = (req, res, next) => {
   // This has to be exactly the same as we defined in the route :id
   // Allowing us to extract it from the url parameters
+  //INFO: mongoose comes with a findById so we dont need to change the function called
   const prodID = req.params.productId;
   Product.findById(prodID)
     .then((product) => {
@@ -32,7 +34,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,
