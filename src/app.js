@@ -1,26 +1,26 @@
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-const errorController = require("./controllers/error");
-const mongoConnect = require("./util/database").mongoConnect;
-const User = require("./models/user");
+import express from "express";
+import { join } from "path";
+import { urlencoded } from "body-parser";
+import adminRoutes from "./routes/admin";
+import shopRoutes from "./routes/shop";
+import { get404 } from "./controllers/error";
+import { mongoConnect } from "./util/database";
+import User, { findById } from "./models/user";
 
 const app = express();
 const PORT = 3000;
-const rootPath = path.join(__dirname, "public");
+const rootPath = join(__dirname, "public");
 
 app.set("view engine", "ejs");
 //WARN: cwd, current working directory + the /views/ folder
 //WARN: As i have changed he project structure we have to specify the src/views no so we can still render our static views
 app.set("views", "src/views");
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(urlencoded({ extended: false }));
 app.use(express.static(rootPath));
 
 app.use((req, res, next) => {
-  User.findById("6867d9ea21f33fffdcc32e84")
+  findById("6867d9ea21f33fffdcc32e84")
     .then((user) => {
       // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
       // Now we can call methods on req.user
@@ -43,7 +43,7 @@ app.use(shopRoutes);
 
 // Then because we are using the use route and no path as the first parameter
 // This will handle all http methods and not just ehg et or post
-app.use(errorController.get404);
+app.use(get404);
 
 // app.listen(PORT);
 
