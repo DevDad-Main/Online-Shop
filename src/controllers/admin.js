@@ -1,6 +1,6 @@
-import Product, { findById, fetchAll, deleteById } from "../models/product";
+const Product = require("../models/product");
 
-function getAddProduct(req, res, next) {
+exports.getAddProduct = (req, res, next) => {
   // This wont't specifically move onto the next middleware.
   // As we need to specify the next keyword;
   // res.sendFile(path.join(rootDir, "views", "add-product.html"));
@@ -12,9 +12,9 @@ function getAddProduct(req, res, next) {
     editing: false,
   });
   // console.log(rootDir);
-}
+};
 
-function postAddProduct(req, res, next) {
+exports.postAddProduct = (req, res, next) => {
   // Creating our class product here so we can define new products whenver the admin makes one
 
   //TODO: Convert this into a destructured object for readability
@@ -42,9 +42,9 @@ function postAddProduct(req, res, next) {
     .catch((err) => {
       console.log(err);
     });
-}
+};
 
-function getEditProduct(req, res, next) {
+exports.getEditProduct = (req, res, next) => {
   // This extracted value is always a string so we need to do a check for that also
   const editMode = req.query.edit;
 
@@ -53,7 +53,7 @@ function getEditProduct(req, res, next) {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  findById(prodId)
+  Product.findById(prodId)
     .then((product) => {
       if (!product) {
         return res.redirect("/");
@@ -70,9 +70,9 @@ function getEditProduct(req, res, next) {
       });
     })
     .catch((err) => console.log(err));
-}
+};
 
-function postEditProduct(req, res, next) {
+exports.postEditProduct = (req, res, next) => {
   // Retreiving this from the hidden input only if we are in edit mode
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
@@ -96,22 +96,22 @@ function postEditProduct(req, res, next) {
       res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
-}
+};
 
-function getProducts(req, res, next) {
-  fetchAll().then((products) => {
+exports.getProducts = (req, res, next) => {
+  Product.fetchAll().then((products) => {
     res.render("admin/products", {
       prods: products,
       pageTitle: "Admin Products",
       path: "/admin/products",
     });
   });
-}
+};
 
-function postDeleteProduct(req, res, next) {
+exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
 
-  deleteById(prodId)
+  Product.deleteById(prodId)
     .then(() => {
       console.log("Destroyed Product");
       res.redirect("/admin/products");
@@ -119,13 +119,4 @@ function postDeleteProduct(req, res, next) {
     .catch((err) => console.log(err));
 
   // call back so we only get redirected back to the admin products page once we have successffully deleted a product
-}
-
-export {
-  getAddProduct,
-  postAddProduct,
-  getEditProduct,
-  postEditProduct,
-  getProducts,
-  postDeleteProduct,
 };
