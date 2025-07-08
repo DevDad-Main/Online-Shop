@@ -2,10 +2,10 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-const errorController = require("./controllers/error");
-const User = require("./models/user");
+const adminRoutes = require("./routes/admin.routes");
+const shopRoutes = require("./routes/shop.routes");
+const errorController = require("./controllers/error.controllers");
+const User = require("./models/user.models");
 
 const app = express();
 const PORT = 3000;
@@ -19,18 +19,18 @@ app.set("views", "src/views");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(rootPath));
 
-// app.use((req, res, next) => {
-//   User.findById("6867d9ea21f33fffdcc32e84")
-//     .then((user) => {
-//       // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
-//       // Now we can call methods on req.user
-//       req.user = new User(user.name, user.email, user.cart, user._id);
-//       next();
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
+app.use((req, res, next) => {
+  User.findById("686cf0d3ddac976c102aacbb")
+    .then((user) => {
+      // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
+      // Now we can call methods on req.user
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
 // This will automatically consider our routes in the admin.js file.
 // When filing the request through the middlewares
@@ -49,7 +49,18 @@ mongoose
   .connect(
     "mongodb+srv://devdad:Martametz311219!@cluster1.6zhu8cq.mongodb.net/shop",
   )
-  .then((result) =>
-    app.listen(PORT, () => console.log(`Server is listening on ${PORT}`)),
-  )
+  .then((result) => {
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "Olly",
+          email: "Olly@test.com",
+          cart: { items: [] },
+        });
+        user.save();
+      }
+    });
+
+    app.listen(PORT, () => console.log(`Server is listening on ${PORT}`));
+  })
   .catch((err) => console.log(err));

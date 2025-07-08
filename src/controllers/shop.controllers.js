@@ -1,4 +1,4 @@
-const Product = require("../models/product");
+const Product = require("../models/product.models");
 
 exports.getProducts = (req, res, next) => {
   //INFO: Find here does not return us a cursor it returns us all the products
@@ -47,10 +47,13 @@ exports.getIndex = (req, res, next) => {
     });
 };
 
-exports.getCart = (req, res, next) => {
-  req.user
-    .getCart()
-    .then((products) => {
+exports.getCart = async (req, res, next) => {
+  await req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      console.log(user.cart.items);
+      const products = user.cart.items;
+      console.log(products);
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",
@@ -73,7 +76,7 @@ exports.postCart = (req, res, next) => {
   // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
   // Now we can call methods on req.user
 };
-//
+
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   req.user

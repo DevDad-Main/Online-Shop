@@ -19,6 +19,11 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 // MongoDb will actually take a our model now, make it lower case and then make it plural. This is what our collection name will be and what we can see on compass

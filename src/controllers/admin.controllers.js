@@ -1,4 +1,4 @@
-const Product = require("../models/product");
+const Product = require("../models/product.models.js");
 
 exports.getAddProduct = (req, res, next) => {
   // This wont't specifically move onto the next middleware.
@@ -28,6 +28,8 @@ exports.postAddProduct = (req, res, next) => {
     price: price,
     description: description,
     imageUrl: imageUrl,
+    // Don't need to use the _id here as we are using mongoose, mongoose will pick it up automatically
+    userId: req.user?._id,
   });
 
   product
@@ -73,22 +75,18 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
   // Retreiving this from the hidden input only if we are in edit mode
   const prodId = req.body.productId;
-  const updatedTitle = req.body.title;
-  const updatedPrice = req.body.price;
-  const updatedImageUrl = req.body.imageUrl;
-  const updatedDesc = req.body.description;
-  // Now when we pass in the id in the save method we will enter the if block which in turns updates the current product we are on with the new details we pass in
+  const { title, price, imageUrl, description } = req.body;
 
-  const product = new Product(
-    updatedTitle,
-    updatedPrice,
-    updatedDesc,
-    updatedImageUrl,
-    prodId,
-  );
+  Product.findById(prodId)
+    .then((product) => {
+      //INFO: Calling save on an exisiting product (Like we are doing below) won't actually create a new one, but it will update it with the new values we asssign above
+      product.title = title;
+      product.price = price;
+      product.description = description;
+      product.imageUrl = imageUrl;
 
-  product
-    .save()
+      return product.save();
+    })
     .then((result) => {
       console.log("Updated Product");
       res.redirect("/admin/products");
@@ -97,19 +95,23 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll().then((products) => {
-    res.render("admin/products", {
-      prods: products,
-      pageTitle: "Admin Products",
-      path: "/admin/products",
+  //INFO: Populate will tell mongoose to populate a certain field with all the detail information and not just the id
+  Product.find()
+    // .populate("userId", "name")
+    .then((products) => {
+      console.log(products);
+      res.render("admin/products", {
+        prods: products,
+        pageTitle: "Admin Products",
+        path: "/admin/products",
+      });
     });
-  });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
 
-  Product.deleteById(prodId)
+  Product.findByIdAndDelete(prodId)
     .then(() => {
       console.log("Destroyed Product");
       res.redirect("/admin/products");
