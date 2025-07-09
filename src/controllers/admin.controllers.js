@@ -29,7 +29,7 @@ exports.postAddProduct = (req, res, next) => {
     description: description,
     imageUrl: imageUrl,
     // Don't need to use the _id here as we are using mongoose, mongoose will pick it up automatically
-    userId: req.user?._id,
+    userId: req.user,
   });
 
   product
@@ -104,6 +104,7 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
+        isAuthenticated: req.isLoggedIn,
       });
     });
 };

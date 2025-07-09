@@ -12,6 +12,7 @@ exports.getProducts = (req, res, next) => {
         docTitle: "All Products",
         path: "/products",
         pageTitle: "Shop",
+        isAuthenticated: req.session.isloggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -29,6 +30,7 @@ exports.getProduct = (req, res, next) => {
         product: product,
         pageTitle: product.title,
         path: "/products",
+        isAuthenticated: req.session.isloggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -41,6 +43,7 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         path: "/",
         pageTitle: "Shop",
+        isAuthenticated: req.session.isloggedIn,
       });
     })
     .catch((err) => {
@@ -59,6 +62,7 @@ exports.getCart = async (req, res, next) => {
         path: "/cart",
         pageTitle: "Your Cart",
         products: products,
+        isAuthenticated: req.session.isloggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -95,7 +99,8 @@ exports.postOrder = async (req, res, next) => {
       console.log(user.cart.items);
       //INFO: Remapping our returned products to a newer easier to work with object as everything is nested differently to what the order fields require
       const products = user.cart.items.map((i) => {
-        return { quantity: i.quantity, product: i.productId };
+        //INFO: Using the _doc mongoose gives us to all of the data inside, spread operator to pull out all of the data and store it in a new object
+        return { quantity: i.quantity, product: { ...i.productId._doc } };
       });
       const order = new Order({
         user: {
@@ -107,17 +112,24 @@ exports.postOrder = async (req, res, next) => {
       return order.save();
     })
     .then((results) => {
-      res.redirect("/orders");
+      return req.user.clearCart();
+    })
+    .then(() => {
+      res.redirect("/orders"); // Once we have claered the above cart then we redirect
     })
     .catch((err) => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders().then((orders) => {
+  //INFO: Should return us all orders that belong to user that matches the users id (The User logged in)
+  Order.find({
+    "user.userId": req.user._id,
+  }).then((orders) => {
     res.render("shop/orders", {
       path: "/orders",
       pageTitle: "Your Orders",
       orders: orders,
+      isAuthenticated: req.session.isloggedIn,
     });
   });
 };

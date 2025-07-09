@@ -4,12 +4,20 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const adminRoutes = require("./routes/admin.routes");
 const shopRoutes = require("./routes/shop.routes");
-const errorController = require("./controllers/error.controllers");
+const authRoutes = require("./routes/auth.routes");
+const errRoutes = require("./routes/err.routes");
 const User = require("./models/user.models");
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
+const dotenv = require("dotenv");
 
+dotenv.config();
 const app = express();
-const PORT = 3000;
-const rootPath = path.join(__dirname, "public");
+const store = new MongoDBStore({
+  uri: process.env.MONGO_URI,
+  // Defining a collection where our sessions will be stored
+  collection: "sessions",
+});
 
 app.set("view engine", "ejs");
 //WARN: cwd, current working directory + the /views/ folder
@@ -17,13 +25,23 @@ app.set("view engine", "ejs");
 app.set("views", "src/views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(rootPath));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: "secret session",
+    resave: false,
+    saveUninitialized: false,
+    // Session data now will be saved in our store
+    store: store,
+  }),
+);
 
 app.use((req, res, next) => {
-  User.findById("686cf0d3ddac976c102aacbb")
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then((user) => {
-      // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
-      // Now we can call methods on req.user
       req.user = user;
       next();
     })
@@ -32,23 +50,13 @@ app.use((req, res, next) => {
     });
 });
 
-// This will automatically consider our routes in the admin.js file.
-// When filing the request through the middlewares
-// Filtering our route via the /admin, so now the url has to go to /admin/add-product
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
-
-// This will be a catch all route, because if our middlewares above
-// Have nowhere else to go then we will send a 404 status code
-
-// Then because we are using the use route and no path as the first parameter
-// This will handle all http methods and not just ehg et or post
-app.use(errorController.get404);
+app.use(authRoutes);
+app.use(errRoutes);
 
 mongoose
-  .connect(
-    "mongodb+srv://devdad:Martametz311219!@cluster1.6zhu8cq.mongodb.net/shop",
-  )
+  .connect(process.env.MONGO_URI)
   .then((result) => {
     User.findOne().then((user) => {
       if (!user) {
@@ -61,6 +69,8 @@ mongoose
       }
     });
 
-    app.listen(PORT, () => console.log(`Server is listening on ${PORT}`));
+    app.listen(process.env.PORT, () =>
+      console.log(`Server is listening on ${process.env.PORT}`),
+    );
   })
   .catch((err) => console.log(err));
