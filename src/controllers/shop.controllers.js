@@ -1,4 +1,5 @@
 const Product = require("../models/product.models");
+const Order = require("../models/order.models");
 
 exports.getProducts = (req, res, next) => {
   //INFO: Find here does not return us a cursor it returns us all the products
@@ -80,17 +81,31 @@ exports.postCart = (req, res, next) => {
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   req.user
-    .deleteItemFromCart(prodId)
+    .removeFromCart(prodId)
     .then((result) => {
       res.redirect("/cart");
     })
     .catch((err) => console.log(err));
 };
 
-exports.postOrder = (req, res, next) => {
-  let fetchedCart;
-  req.user
-    .addOrder()
+exports.postOrder = async (req, res, next) => {
+  await req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      console.log(user.cart.items);
+      //INFO: Remapping our returned products to a newer easier to work with object as everything is nested differently to what the order fields require
+      const products = user.cart.items.map((i) => {
+        return { quantity: i.quantity, product: i.productId };
+      });
+      const order = new Order({
+        user: {
+          name: req.user.name,
+          userId: req.user._id, // mongoose picks the id automatically
+        },
+        products: products,
+      });
+      return order.save();
+    })
     .then((results) => {
       res.redirect("/orders");
     })
