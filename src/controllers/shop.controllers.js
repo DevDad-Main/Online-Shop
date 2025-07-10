@@ -1,5 +1,8 @@
 import { Product } from "../models/product.models.js";
 import { Order } from "../models/order.models.js";
+import Tokens from "csrf";
+
+const tokens = new Tokens();
 
 export function getProducts(req, res, next) {
   //INFO: Find here does not return us a cursor it returns us all the products
@@ -37,6 +40,10 @@ export function getProduct(req, res, next) {
 }
 
 export function getIndex(req, res, next) {
+  const csrfToken = tokens.create(
+    req.session.csrfSecret || tokens.secretSync(),
+  );
+  req.session.csrfSecret ??= tokens.secretSync(); // set if not set
   Product.find()
     .then((products) => {
       res.render("shop/index", {
@@ -44,6 +51,7 @@ export function getIndex(req, res, next) {
         path: "/",
         pageTitle: "Shop",
         isAuthenticated: req.session.isLoggedIn,
+        csrfToken: csrfToken,
       });
     })
     .catch((err) => {

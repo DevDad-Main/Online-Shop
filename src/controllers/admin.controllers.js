@@ -13,6 +13,7 @@ export function getAddProduct(req, res, next) {
     // The naviagtion item, the page we are on essentially
     path: "/admin/add-product",
     editing: false,
+    isAuthenticated: req.session.isLoggedIn,
   });
   // console.log(rootDir);
 }
@@ -70,6 +71,7 @@ export function getEditProduct(req, res, next) {
         // click the save button, we should try to add the product or edit and update
         editing: editMode,
         product: product,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -99,7 +101,7 @@ export function postEditProduct(req, res, next) {
 
 export function getProducts(req, res, next) {
   //INFO: Populate will tell mongoose to populate a certain field with all the detail information and not just the id
-  find()
+  Product.find()
     // .populate("userId", "name")
     .then((products) => {
       console.log(products);
@@ -107,7 +109,7 @@ export function getProducts(req, res, next) {
         prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     });
 }

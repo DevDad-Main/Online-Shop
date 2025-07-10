@@ -12,11 +12,14 @@ import session from "express-session";
 import ConnectMongoDBSession from "connect-mongodb-session";
 const MongoDBStore = ConnectMongoDBSession(session);
 import dotenv from "dotenv";
+import Tokens from "csrf";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const tokens = new Tokens();
+
 const app = express();
 const store = new MongoDBStore({
   uri: process.env.MONGO_URI,
@@ -38,6 +41,16 @@ app.use(
     store: store,
   }),
 );
+app.use((req, res, next) => {
+  //WARN: Generate a CSRF secret if not already set
+  if (!req.session.csrfToken) {
+    req.session.csrfSecret = tokens.secretSync();
+  }
+  //WARN: Generate a token to be sent to the client
+  res.locals.csrfToken = tokens.create(req.session.csrfSecret);
+
+  next();
+});
 
 app.use((req, res, next) => {
   if (!req.session.user) {
