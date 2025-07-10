@@ -1,6 +1,9 @@
 import { Product } from "../models/product.models.js";
 
 export function getAddProduct(req, res, next) {
+  if (!req.session.isLoggedIn) {
+    return res.redirect("/login");
+  }
   // This wont't specifically move onto the next middleware.
   // As we need to specify the next keyword;
   // res.sendFile(path.join(rootDir, "views", "add-product.html"));

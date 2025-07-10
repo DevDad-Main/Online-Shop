@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { isAuth } from "../middleware/isAuth.middleware.js";
 import {
   getIndex,
   getProducts,
@@ -19,10 +20,10 @@ router.get("/products", getProducts);
 // // Essentiallyy tells express to look for a route like /products/1
 // // -> Allowing use to extract the id
 router.get("/products/:productId", getProduct);
-router.get("/cart", getCart);
-router.post("/cart", postCart);
-router.post("/cart-delete-item", postCartDeleteProduct);
-router.post("/create-order", postOrder);
-router.get("/orders", getOrders);
-// // router.get("/checkout", shopController.getCheckout);
+router.get("/cart", isAuth, getCart);
+router.post("/cart", isAuth, postCart);
+router.post("/cart-delete-item", isAuth, postCartDeleteProduct);
+router.post("/create-order", isAuth, postOrder);
+router.get("/orders", isAuth, getOrders);
+
 export default router;
