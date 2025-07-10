@@ -41,16 +41,16 @@ app.use(
     store: store,
   }),
 );
-app.use((req, res, next) => {
-  //WARN: Generate a CSRF secret if not already set
-  if (!req.session.csrfToken) {
-    req.session.csrfSecret = tokens.secretSync();
-  }
-  //WARN: Generate a token to be sent to the client
-  res.locals.csrfToken = tokens.create(req.session.csrfSecret);
-
-  next();
-});
+// app.use((req, res, next) => {
+//   //WARN: Generate a CSRF secret if not already set
+//   if (!req.session.csrfToken) {
+//     req.session.csrfSecret = tokens.secretSync();
+//   }
+//   //WARN: Generate a token to be sent to the client
+//   res.locals.csrfToken = tokens.create(req.session.csrfSecret);
+//
+//   next();
+// });
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -64,6 +64,18 @@ app.use((req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
+});
+
+app.use((req, res, next) => {
+  const csrfToken = tokens.create(
+    req.session.csrfSecret || tokens.secretSync(),
+  );
+  req.session.csrfSecret ??= tokens.secretSync(); // set if not set
+  //INFO: Allows us to set local variables which will be passsed into our views.
+  //INFO: Locals -> They only live inside of views which will be rendered
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = csrfToken;
+  next();
 });
 
 app.use("/admin", adminRoutes);

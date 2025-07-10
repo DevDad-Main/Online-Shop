@@ -40,10 +40,6 @@ export function getProduct(req, res, next) {
 }
 
 export function getIndex(req, res, next) {
-  const csrfToken = tokens.create(
-    req.session.csrfSecret || tokens.secretSync(),
-  );
-  req.session.csrfSecret ??= tokens.secretSync(); // set if not set
   Product.find()
     .then((products) => {
       res.render("shop/index", {
@@ -51,7 +47,6 @@ export function getIndex(req, res, next) {
         path: "/",
         pageTitle: "Shop",
         isAuthenticated: req.session.isLoggedIn,
-        csrfToken: csrfToken,
       });
     })
     .catch((err) => {
@@ -112,7 +107,7 @@ export async function postOrder(req, res, next) {
       });
       const order = new Order({
         user: {
-          name: req.user.name,
+          email: req.user.email,
           userId: req.user._id, // mongoose picks the id automatically
         },
         products: products,
