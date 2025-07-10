@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from "mongoose";
 
 const productSchema = new Schema({
   //INFO: We don't need to define _id as this gets automatically assigned by Mongo
@@ -27,7 +26,7 @@ const productSchema = new Schema({
 });
 
 // MongoDb will actually take a our model now, make it lower case and then make it plural. This is what our collection name will be and what we can see on compass
-module.exports = mongoose.model("Product", productSchema);
+export const Product = mongoose.model("Product", productSchema);
 
 // const mongodb = require("mongodb");
 // const getDb = require("../util/database").getDb;

@@ -1,6 +1,6 @@
-const Product = require("../models/product.models.js");
+import { Product } from "../models/product.models.js";
 
-exports.getAddProduct = (req, res, next) => {
+export function getAddProduct(req, res, next) {
   // This wont't specifically move onto the next middleware.
   // As we need to specify the next keyword;
   // res.sendFile(path.join(rootDir, "views", "add-product.html"));
@@ -12,9 +12,9 @@ exports.getAddProduct = (req, res, next) => {
     editing: false,
   });
   // console.log(rootDir);
-};
+}
 
-exports.postAddProduct = (req, res, next) => {
+export function postAddProduct(req, res, next) {
   // Creating our class product here so we can define new products whenver the admin makes one
 
   //TODO: Convert this into a destructured object for readability
@@ -42,9 +42,9 @@ exports.postAddProduct = (req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
-};
+}
 
-exports.getEditProduct = (req, res, next) => {
+export function getEditProduct(req, res, next) {
   // This extracted value is always a string so we need to do a check for that also
   const editMode = req.query.edit;
 
@@ -53,7 +53,7 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.findById(prodId)
+  findById(prodId)
     .then((product) => {
       if (!product) {
         return res.redirect("/");
@@ -70,14 +70,14 @@ exports.getEditProduct = (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
-};
+}
 
-exports.postEditProduct = (req, res, next) => {
+export function postEditProduct(req, res, next) {
   // Retreiving this from the hidden input only if we are in edit mode
   const prodId = req.body.productId;
   const { title, price, imageUrl, description } = req.body;
 
-  Product.findById(prodId)
+  findById(prodId)
     .then((product) => {
       //INFO: Calling save on an exisiting product (Like we are doing below) won't actually create a new one, but it will update it with the new values we asssign above
       product.title = title;
@@ -92,11 +92,11 @@ exports.postEditProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
-};
+}
 
-exports.getProducts = (req, res, next) => {
+export function getProducts(req, res, next) {
   //INFO: Populate will tell mongoose to populate a certain field with all the detail information and not just the id
-  Product.find()
+  find()
     // .populate("userId", "name")
     .then((products) => {
       console.log(products);
@@ -107,12 +107,12 @@ exports.getProducts = (req, res, next) => {
         isAuthenticated: req.isLoggedIn,
       });
     });
-};
+}
 
-exports.postDeleteProduct = (req, res, next) => {
+export function postDeleteProduct(req, res, next) {
   const prodId = req.body.productId;
 
-  Product.findByIdAndDelete(prodId)
+  findByIdAndDelete(prodId)
     .then(() => {
       console.log("Destroyed Product");
       res.redirect("/admin/products");
@@ -120,4 +120,4 @@ exports.postDeleteProduct = (req, res, next) => {
     .catch((err) => console.log(err));
 
   // call back so we only get redirected back to the admin products page once we have successffully deleted a product
-};
+}

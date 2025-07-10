@@ -1,17 +1,22 @@
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const adminRoutes = require("./routes/admin.routes");
-const shopRoutes = require("./routes/shop.routes");
-const authRoutes = require("./routes/auth.routes");
-const errRoutes = require("./routes/err.routes");
-const User = require("./models/user.models");
-const session = require("express-session");
-const MongoDBStore = require("connect-mongodb-session")(session);
-const dotenv = require("dotenv");
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import adminRoutes from "./routes/admin.routes.js";
+import shopRoutes from "./routes/shop.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import errRoutes from "./routes/err.routes.js";
+import { User } from "./models/user.models.js";
+import session from "express-session";
+import ConnectMongoDBSession from "connect-mongodb-session";
+const MongoDBStore = ConnectMongoDBSession(session);
+import dotenv from "dotenv";
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 const store = new MongoDBStore({
   uri: process.env.MONGO_URI,

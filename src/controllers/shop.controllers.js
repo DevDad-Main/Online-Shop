@@ -1,7 +1,7 @@
-const Product = require("../models/product.models");
-const Order = require("../models/order.models");
+import { Product } from "../models/product.models.js";
+import { Order } from "../models/order.models.js";
 
-exports.getProducts = (req, res, next) => {
+export function getProducts(req, res, next) {
   //INFO: Find here does not return us a cursor it returns us all the products
   //WARN: We should turn this into a cursor when working with large amounts of data, or manipulate .find() to limit the data returned using pagination
   Product.find()
@@ -16,9 +16,9 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
-};
+}
 
-exports.getProduct = (req, res, next) => {
+export function getProduct(req, res, next) {
   // This has to be exactly the same as we defined in the route :id
   // Allowing us to extract it from the url parameters
   //INFO: mongoose comes with a findById so we dont need to change the function called
@@ -34,9 +34,9 @@ exports.getProduct = (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
-};
+}
 
-exports.getIndex = (req, res, next) => {
+export function getIndex(req, res, next) {
   Product.find()
     .then((products) => {
       res.render("shop/index", {
@@ -49,9 +49,9 @@ exports.getIndex = (req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
-};
+}
 
-exports.getCart = async (req, res, next) => {
+export async function getCart(req, res, next) {
   await req.user
     .populate("cart.items.productId")
     .then((user) => {
@@ -66,9 +66,9 @@ exports.getCart = async (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
-};
+}
 
-exports.postCart = (req, res, next) => {
+export function postCart(req, res, next) {
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then((product) => {
@@ -80,9 +80,9 @@ exports.postCart = (req, res, next) => {
     });
   // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
   // Now we can call methods on req.user
-};
+}
 
-exports.postCartDeleteProduct = (req, res, next) => {
+export function postCartDeleteProduct(req, res, next) {
   const prodId = req.body.productId;
   req.user
     .removeFromCart(prodId)
@@ -90,9 +90,9 @@ exports.postCartDeleteProduct = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((err) => console.log(err));
-};
+}
 
-exports.postOrder = async (req, res, next) => {
+export async function postOrder(req, res, next) {
   await req.user
     .populate("cart.items.productId")
     .then((user) => {
@@ -118,9 +118,9 @@ exports.postOrder = async (req, res, next) => {
       res.redirect("/orders"); // Once we have claered the above cart then we redirect
     })
     .catch((err) => console.log(err));
-};
+}
 
-exports.getOrders = (req, res, next) => {
+export function getOrders(req, res, next) {
   //INFO: Should return us all orders that belong to user that matches the users id (The User logged in)
   Order.find({
     "user.userId": req.user._id,
@@ -132,7 +132,7 @@ exports.getOrders = (req, res, next) => {
       isAuthenticated: req.session.isLoggedIn,
     });
   });
-};
+}
 
 //
 // exports.getCheckout = (req, res, next) => {

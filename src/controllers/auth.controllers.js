@@ -1,14 +1,14 @@
-const User = require("../models/user.models");
+import { User } from "../models/user.models.js";
 
-exports.getLogin = (req, res, next) => {
+export function getLogin(req, res, next) {
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
     isAuthenticated: req.session.isLoggedIn,
   });
-};
+}
 
-exports.postLogin = (req, res, next) => {
+export function postLogin(req, res, next) {
   User.findById("686ee4f824d7509e3e24abf9")
     .then((user) => {
       req.session.isLoggedIn = true;
@@ -20,11 +20,11 @@ exports.postLogin = (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
-};
+}
 
-exports.postLogout = (req, res, next) => {
+export function postLogout(req, res, next) {
   req.session.destroy((err) => {
     console.log(err);
     res.redirect("/");
   });
-};
+}
