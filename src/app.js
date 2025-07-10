@@ -20,8 +20,6 @@ const store = new MongoDBStore({
 });
 
 app.set("view engine", "ejs");
-//WARN: cwd, current working directory + the /views/ folder
-//WARN: As i have changed he project structure we have to specify the src/views no so we can still render our static views
 app.set("views", "src/views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
