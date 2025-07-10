@@ -1,4 +1,5 @@
 import { User } from "../models/user.models.js";
+import bcrypt from "bcryptjs";
 
 export function getLogin(req, res, next) {
   res.render("auth/login", {
@@ -45,19 +46,25 @@ export function postSignup(req, res, next) {
   User.findOne({ email: email })
     .then((userDoc) => {
       if (userDoc) {
+        console.log("User already exists");
         return res.redirect("/signup");
       }
+
       //INFO:3. If user already exists(more complex validation later) -> Then we create a new one and save it to DB.
-      const user = new User({
-        email: email,
-        password: password,
-        cart: { items: [] },
-      });
-      return user.save();
-    })
-    .then((result) => {
-      //INFO: 4. Redirect to login page to coincidentally login
-      res.redirect("/login");
+      return bcrypt
+        .hash(password, 12)
+        .then((hashedPassword) => {
+          const user = new User({
+            email: email,
+            password: hashedPassword,
+            cart: { items: [] },
+          });
+          return user.save();
+        })
+        .then((result) => {
+          //INFO: 4. Redirect to login page to coincidentally login
+          res.redirect("/login");
+        });
     })
     .catch((err) => console.log(err));
 }
