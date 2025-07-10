@@ -61,17 +61,6 @@ app.use(errRoutes);
 mongoose
   .connect(process.env.MONGO_URI)
   .then((result) => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const user = new User({
-          name: "Olly",
-          email: "Olly@test.com",
-          cart: { items: [] },
-        });
-        user.save();
-      }
-    });
-
     app.listen(process.env.PORT, () =>
       console.log(`Server is listening on ${process.env.PORT}`),
     );

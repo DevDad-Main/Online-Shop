@@ -28,3 +28,36 @@ export function postLogout(req, res, next) {
     res.redirect("/");
   });
 }
+
+export function getSignup(req, res, next) {
+  res.render("auth/signup", {
+    path: "/signup",
+    pageTitle: "Signup",
+    isAuthenticated: false,
+  });
+}
+
+export function postSignup(req, res, next) {
+  //INFO: 1. Extracting the details passed in from the Login webpage
+  const { email, password, confirmPassword } = req.body;
+
+  //INFO:2. Validation
+  User.findOne({ email: email })
+    .then((userDoc) => {
+      if (userDoc) {
+        return res.redirect("/signup");
+      }
+      //INFO:3. If user already exists(more complex validation later) -> Then we create a new one and save it to DB.
+      const user = new User({
+        email: email,
+        password: password,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      //INFO: 4. Redirect to login page to coincidentally login
+      res.redirect("/login");
+    })
+    .catch((err) => console.log(err));
+}
