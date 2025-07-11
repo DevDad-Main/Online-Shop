@@ -10,12 +10,12 @@ const mailjet = Mailjet.apiConnect(
 
 export default function sendEmail({
   toEmail,
-  toName = "New User",
+  toName,
   subject,
   text,
   html,
   fromEmail = "onlineshopdummy@gmail.com",
-  fromName = "Online Shop",
+  fromName = "DevDads Shop",
 }) {
   return mailjet.post("send", { version: "v3.1" }).request({
     Messages: [
