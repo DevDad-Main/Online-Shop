@@ -42,6 +42,7 @@ app.use(
     store: store,
   }),
 );
+
 // app.use((req, res, next) => {
 //   //WARN: Generate a CSRF secret if not already set
 //   if (!req.session.csrfToken) {
@@ -72,12 +73,12 @@ app.use((req, res, next) => {
     req.session.csrfSecret || tokens.secretSync(),
   );
   req.session.csrfSecret ??= tokens.secretSync(); // set if not set
-  //INFO: Allows us to set local variables which will be passsed into our views.
-  //INFO: Locals -> They only live inside of views which will be rendered
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.csrfToken = csrfToken;
   next();
 });
+
+//INFO: The flash is typically used in combination with redirects, ensuring that the message is available to the next page that is to be rendered.
 app.use(flash());
 
 app.use("/admin", adminRoutes);
