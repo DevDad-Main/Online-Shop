@@ -105,3 +105,5 @@ export function postSignup(req, res, next) {
     })
     .catch((err) => console.log(err));
 }
+
+export function getReset(req, res, next) {}
