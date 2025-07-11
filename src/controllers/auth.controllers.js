@@ -5,6 +5,7 @@ export function getLogin(req, res, next) {
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
+    errorMessage: req.flash("error"),
   });
 }
 
@@ -16,6 +17,7 @@ export function postLogin(req, res, next) {
   })
     .then((user) => {
       if (!user) {
+        req.flash("error", "Invalid email or password.");
         return res.redirect("/login");
       }
       bcrypt

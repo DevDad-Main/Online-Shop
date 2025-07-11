@@ -13,6 +13,7 @@ import ConnectMongoDBSession from "connect-mongodb-session";
 const MongoDBStore = ConnectMongoDBSession(session);
 import dotenv from "dotenv";
 import Tokens from "csrf";
+import flash from "connect-flash";
 
 dotenv.config();
 
@@ -77,6 +78,7 @@ app.use((req, res, next) => {
   res.locals.csrfToken = csrfToken;
   next();
 });
+app.use(flash());
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
