@@ -1,5 +1,6 @@
 import { User } from "../models/user.models.js";
 import bcrypt from "bcryptjs";
+import sendEmail from "../util/mailjet.util.js";
 
 export function getLogin(req, res, next) {
   let message = req.flash("error");
@@ -86,7 +87,20 @@ export function postSignup(req, res, next) {
         })
         .then((result) => {
           //INFO: 4. Redirect to login page to coincidentally login
-          res.redirect("/login");
+          return sendEmail({
+            toEmail: email,
+            subject: "Signup Successful!",
+            text: "Thank you for signing up to our shop! Enjoy shopping with us.",
+            html: "<h3>Welcome to our store!</h3><p>We’re excited to have you onboard.</p>",
+          })
+            .then((result) => {
+              console.log(result.body);
+              res.redirect("/login");
+            })
+            .catch((err) => {
+              console.error("Signup error:", err);
+              res.redirect("/signup");
+            });
         });
     })
     .catch((err) => console.log(err));

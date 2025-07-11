@@ -23,6 +23,7 @@
     "express-session": "^1.18.1",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.2",
+    "node-mailjet": "^6.0.8",
     "pug": "^3.0.3"
   },
   "devDependencies": {
