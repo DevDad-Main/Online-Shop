@@ -99,7 +99,9 @@ export function postEditProduct(req, res, next) {
 
 export function getProducts(req, res, next) {
   //INFO: Populate will tell mongoose to populate a certain field with all the detail information and not just the id
-  Product.find()
+  Product.find({
+    userId: req.user._id,
+  })
     // .populate("userId", "name")
     .then((products) => {
       console.log(products);

@@ -27,6 +27,7 @@
     "pug": "^3.0.3"
   },
   "devDependencies": {
+    "eslint-config-prettier": "^10.1.5",
     "nodemon": "^3.1.10"
   }
 }
