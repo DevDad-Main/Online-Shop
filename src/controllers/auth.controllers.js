@@ -73,7 +73,7 @@ export function getSignup(req, res, next) {
 
 //#region Post Signup
 export function postSignup(req, res, next) {
-  const { email, password, confirmPassword } = req.body;
+  const { email, password } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -84,42 +84,31 @@ export function postSignup(req, res, next) {
       errorMessage: errors.array()[0].msg,
     });
   }
-  //INFO:2. Validation
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      if (userDoc) {
-        console.log("User already exists");
-        req.flash("error", "E-mail already exists! Please try again.");
-        return res.redirect("/signup");
-      }
-
-      //INFO:3. If user already exists(more complex validation later) -> Then we create a new one and save it to DB.
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
+  //INFO: We can start with hashing the password here as we already check for the users exisitnce in the validtor route, the route that get's processed before this one adn obviously if that passes then we will end up here with all of our data
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      return sendEmail({
+        toEmail: email,
+        subject: "Signup Successful!",
+        text: "Thank you for signing up to our shop! Enjoy shopping with us.",
+        html: "<h3>Welcome to our store!</h3><p>We’re excited to have you onboard.</p>",
+      })
         .then((result) => {
-          ////INFO: 4. Redirect to login page to coincidentally login
-          return sendEmail({
-            toEmail: email,
-            subject: "Signup Successful!",
-            text: "Thank you for signing up to our shop! Enjoy shopping with us.",
-            html: "<h3>Welcome to our store!</h3><p>We’re excited to have you onboard.</p>",
-          })
-            .then((result) => {
-              console.log(result.body);
-              res.redirect("/login");
-            })
-            .catch((err) => {
-              console.error("Signup error:", err);
-              res.redirect("/signup");
-            });
+          console.log(result.body);
+          res.redirect("/login");
+        })
+        .catch((err) => {
+          console.error("Signup error:", err);
+          res.redirect("/signup");
         });
     })
     .catch((err) => console.log(err));
