@@ -82,17 +82,21 @@ export function postEditProduct(req, res, next) {
 
   findById(prodId)
     .then((product) => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        // If we are not the original creator of this product then we they get redirected
+        return res.redirect("/");
+      }
+
       //INFO: Calling save on an exisiting product (Like we are doing below) won't actually create a new one, but it will update it with the new values we asssign above
       product.title = title;
       product.price = price;
       product.description = description;
       product.imageUrl = imageUrl;
 
-      return product.save();
-    })
-    .then((result) => {
-      console.log("Updated Product");
-      res.redirect("/admin/products");
+      return product.save().then((result) => {
+        console.log("Updated Product");
+        res.redirect("/admin/products");
+      });
     })
     .catch((err) => console.log(err));
 }
@@ -116,7 +120,8 @@ export function getProducts(req, res, next) {
 export function postDeleteProduct(req, res, next) {
   const prodId = req.body.productId;
 
-  findByIdAndDelete(prodId)
+  // Now both fields have to match for a user to delete their product
+  Product.deletOne({ _id: prodId, userId: req.user._id })
     .then(() => {
       console.log("Destroyed Product");
       res.redirect("/admin/products");
