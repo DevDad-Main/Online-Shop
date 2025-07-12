@@ -1,3 +1,4 @@
+//#region Imports
 import { Router } from "express";
 import {
   getLogin,
@@ -10,7 +11,8 @@ import {
   getNewPassword,
   postNewPassword,
 } from "../controllers/auth.controllers.js";
-
+import { signupValidation } from "../util/expressValidator.util.js";
+//#endregion
 const router = Router();
 
 //#region Get Routes
@@ -23,7 +25,7 @@ router.get("/reset/:token", getNewPassword);
 //#region Post Routes
 router.post("/login", postLogin);
 router.post("/logout", postLogout);
-router.post("/signup", postSignup);
+router.post("/signup", signupValidation, postSignup);
 router.post("/reset", postReset);
 router.post("/new-password", postNewPassword);
 //#endregion

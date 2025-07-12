@@ -2,7 +2,9 @@ import { User } from "../models/user.models.js";
 import bcrypt from "bcryptjs";
 import sendEmail from "../util/mailjet.util.js";
 import crypto from "crypto";
+import { validationResult } from "express-validator";
 
+//#region Get Login
 export function getLogin(req, res, next) {
   let message = req.flash("error");
   res.render("auth/login", {
@@ -11,7 +13,9 @@ export function getLogin(req, res, next) {
     errorMessage: message.length > 0 ? message[0] : null,
   });
 }
+//#endregion
 
+//#region Post Login
 export function postLogin(req, res, next) {
   const { email, password } = req.body;
 
@@ -45,14 +49,18 @@ export function postLogin(req, res, next) {
     })
     .catch((err) => console.log(err));
 }
+//#endregion
 
+//#region Post Logout
 export function postLogout(req, res, next) {
   req.session.destroy((err) => {
     console.log(err);
     res.redirect("/");
   });
 }
+//#endregion
 
+//#region Get Signup
 export function getSignup(req, res, next) {
   let message = req.flash("error");
   res.render("auth/signup", {
@@ -61,11 +69,21 @@ export function getSignup(req, res, next) {
     errorMessage: message.length > 0 ? message[0] : null,
   });
 }
+//#endregion
 
+//#region Post Signup
 export function postSignup(req, res, next) {
-  //INFO: 1. Extracting the details passed in from the Login webpage
   const { email, password, confirmPassword } = req.body;
+  const errors = validationResult(req);
 
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
   //INFO:2. Validation
   User.findOne({ email: email })
     .then((userDoc) => {
@@ -87,7 +105,7 @@ export function postSignup(req, res, next) {
           return user.save();
         })
         .then((result) => {
-          //INFO: 4. Redirect to login page to coincidentally login
+          ////INFO: 4. Redirect to login page to coincidentally login
           return sendEmail({
             toEmail: email,
             subject: "Signup Successful!",
@@ -106,7 +124,9 @@ export function postSignup(req, res, next) {
     })
     .catch((err) => console.log(err));
 }
+//#endregion
 
+//#region Get Reset Password
 export function getReset(req, res, next) {
   let message = req.flash("error");
   res.render("auth/reset", {
@@ -115,7 +135,9 @@ export function getReset(req, res, next) {
     errorMessage: message.length > 0 ? message[0] : null,
   });
 }
+//#endregion
 
+//#region Post Reset Password
 export function postReset(req, res, next) {
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
@@ -151,7 +173,9 @@ export function postReset(req, res, next) {
       });
   });
 }
+//#endregion
 
+//#region Get New Password
 export function getNewPassword(req, res, next) {
   const token = req.params.token;
   //INFO: $gt (Greater Than)
@@ -168,7 +192,9 @@ export function getNewPassword(req, res, next) {
     })
     .catch((err) => console.log(err));
 }
+//#endregion
 
+//#region Post New Password
 export function postNewPassword(req, res, next) {
   // const { newPassword, userId, passwordToken } = req.body;
   const newPassword = req.body.password;
@@ -207,3 +233,4 @@ export function postNewPassword(req, res, next) {
     })
     .catch((err) => console.log(err));
 }
+//#endregion
