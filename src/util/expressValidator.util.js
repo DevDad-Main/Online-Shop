@@ -1,7 +1,14 @@
 import { check, body } from "express-validator";
 import { User } from "../models/user.models.js";
 
-export const signupValidation = [
+export const postLoginValidation = [
+  body("email").isEmail().withMessage("Please enter a valid email address."),
+  body("password")
+    .isLength({ min: 5, max: 12 })
+    .withMessage("Password must be at least 5 characters long and at most 12."),
+];
+
+export const postSignupValidation = [
   check("email")
     .isEmail()
     .withMessage("Please enter a valid email.")

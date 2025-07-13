@@ -19,6 +19,19 @@ export function getLogin(req, res, next) {
 export function postLogin(req, res, next) {
   const { email, password } = req.body;
 
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      path: "/login",
+      pageTitle: "Login",
+      errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+      },
+    });
+  }
+
   User.findOne({
     email: email,
   })
@@ -67,13 +80,19 @@ export function getSignup(req, res, next) {
     path: "/signup",
     pageTitle: "Signup",
     errorMessage: message.length > 0 ? message[0] : null,
+    oldInput: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validationErrors: [],
   });
 }
 //#endregion
 
 //#region Post Signup
 export function postSignup(req, res, next) {
-  const { email, password } = req.body;
+  const { email, password, confirmPassword } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -82,6 +101,12 @@ export function postSignup(req, res, next) {
       path: "/signup",
       pageTitle: "Signup",
       errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+      },
+      validationErrors: errors.array(),
     });
   }
   //INFO: We can start with hashing the password here as we already check for the users exisitnce in the validtor route, the route that get's processed before this one adn obviously if that passes then we will end up here with all of our data
