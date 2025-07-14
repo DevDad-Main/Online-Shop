@@ -11,6 +11,11 @@ export function getLogin(req, res, next) {
     path: "/login",
     pageTitle: "Login",
     errorMessage: message.length > 0 ? message[0] : null,
+    oldInput: {
+      email: "",
+      password: "",
+    },
+    validationErrors: [],
   });
 }
 //#endregion
@@ -29,6 +34,7 @@ export function postLogin(req, res, next) {
         email: email,
         password: password,
       },
+      validationErrors: errors.array(),
     });
   }
 
@@ -37,8 +43,16 @@ export function postLogin(req, res, next) {
   })
     .then((user) => {
       if (!user) {
-        req.flash("error", "Invalid email or password.");
-        return res.redirect("/login");
+        return res.status(422).render("auth/login", {
+          path: "/login",
+          pageTitle: "Login",
+          errorMessage: "Invalid email or password.",
+          oldInput: {
+            email: email,
+            password: password,
+          },
+          validationErrors: [],
+        });
       }
       bcrypt
         .compare(password, user.password)
@@ -52,8 +66,16 @@ export function postLogin(req, res, next) {
               return res.redirect("/");
             });
           }
-          req.flash("error", "Invalid email or password.");
-          res.redirect("/login");
+          return res.status(422).render("auth/login", {
+            path: "/login",
+            pageTitle: "Login",
+            errorMessage: "Invalid email or password.",
+            oldInput: {
+              email: email,
+              password: password,
+            },
+            validationErrors: [],
+          });
         })
         .catch((err) => {
           console.log(err);
