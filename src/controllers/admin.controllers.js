@@ -1,3 +1,4 @@
+import { errorWrapper } from "../util/error.util.js";
 import { Product } from "../models/product.models.js";
 import { validationResult } from "express-validator";
 
@@ -16,12 +17,6 @@ export function getAddProduct(req, res, next) {
 
 //#region Post Add Product
 export function postAddProduct(req, res, next) {
-  //TODO: Convert this into a destructured object for readability
-  // const title = req.body.title;
-  // const imageUrl = req.body.imageUrl;
-  // const description = req.body.description;
-  // const price = req.body.price;
-
   const { title, imageUrl, description, price } = req.body;
   const errors = validationResult(req);
 
@@ -29,7 +24,7 @@ export function postAddProduct(req, res, next) {
     console.log(errors.array());
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Add Product",
-      path: "/admin/edit-product",
+      path: "/admin/add-product",
       editing: false,
       hasError: true,
       product: {
@@ -44,6 +39,7 @@ export function postAddProduct(req, res, next) {
   }
 
   const product = new Product({
+    _id: new mongoose.Types.ObjectId("68763a4650b0b994edd4318e"),
     title: title,
     price: price,
     description: description,
@@ -60,7 +56,28 @@ export function postAddProduct(req, res, next) {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
+      //#region INFO: Displaying all our info again will get cumbersome and repetative
+      // return res.status(422).render("admin/edit-product", {
+      //   pageTitle: "Add Product",
+      //   path: "/admin/add-product",
+      //   editing: false,
+      //   hasError: true,
+      //   product: {
+      //     title: title,
+      //     imageUrl: imageUrl,
+      //     price: price,
+      //     description: description,
+      //   },
+      //   errorMessage: "Database error, please try again.",
+      //   validationErrors: [],
+      // });
+      //#endregion
+
+      //#region INFO: Could redirect too our 500 page as this is a databse server side issue -> Instead use Error Handling
+      // res.redirect("/500");
+      //#endregion
+
+      errorWrapper(next, err);
     });
 }
 //#endregion
@@ -94,7 +111,12 @@ export function getEditProduct(req, res, next) {
         validationErrors: [],
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      errorWrapper(next, err);
+      // const error = new Error(err);
+      // error.httpStatusCode = 500;
+      // return next(error);
+    });
 }
 //#endregion
 
@@ -142,13 +164,12 @@ export function postEditProduct(req, res, next) {
         res.redirect("/admin/products");
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => errorWrapper(next, err));
 }
 //#endregion
 
 //#region Get Products
 export function getProducts(req, res, next) {
-  //INFO: Populate will tell mongoose to populate a certain field with all the detail information and not just the id
   Product.find({
     userId: req.user._id,
   })
@@ -160,6 +181,9 @@ export function getProducts(req, res, next) {
         pageTitle: "Admin Products",
         path: "/admin/products",
       });
+    })
+    .catch((err) => {
+      errorWrapper(next, err);
     });
 }
 //#endregion
@@ -174,7 +198,7 @@ export function postDeleteProduct(req, res, next) {
       console.log("Destroyed Product");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => errorWrapper(next, err));
 
   // call back so we only get redirected back to the admin products page once we have successffully deleted a product
 }

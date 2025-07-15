@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { get404 } from "../controllers/error.controllers.js";
+import { get404, get500 } from "../controllers/error.controllers.js";
 
 const router = Router();
 
-router.get("404", get404);
+//#region Get Routes
+router.get("/404", get404);
+router.get("/500", get500);
+//#endregion
 
 export default router;

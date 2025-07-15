@@ -46,6 +46,7 @@ A scalable backend REST API project built with **Node.js**, **Express.js**, **Mo
 <br>
 <details>
 <summary>Extra Packages and frameworks used</summary>
+<br>
 
 - Express-Validator
 </details>
@@ -55,10 +56,10 @@ A scalable backend REST API project built with **Node.js**, **Express.js**, **Mo
 🧑‍💻 Author
 
 Olly – Aspiring Junior Backend Developer
-📧 [softwaredevdad@gmail.com]
-🌐 [https://devdad.org]
 
----
+📧 softwaredevdad@gmail.com
+
+🌐 https://devdad.org
 
 ---
 

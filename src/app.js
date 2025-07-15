@@ -17,6 +17,7 @@ import Tokens from "csrf";
 import flash from "connect-flash";
 //#endregion
 
+//#region Const Variables
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,6 +30,7 @@ const store = new MongoDBStore({
   // Defining a collection where our sessions will be stored
   collection: "sessions",
 });
+//#endregion
 
 app.set("view engine", "ejs");
 app.set("views", "src/views");
@@ -62,11 +64,14 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.user._id)
     .then((user) => {
+      if (!user) {
+        return next();
+      }
       req.user = user;
       next();
     })
     .catch((err) => {
-      console.log(err);
+      throw new Error(err);
     });
 });
 
@@ -87,6 +92,11 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 app.use(errRoutes);
+
+//NOTE: Error handing middleware that contains 4 args not the standard 3
+app.use((error, req, res, next) => {
+  res.redirect("/500");
+});
 
 mongoose
   .connect(process.env.MONGO_URI)

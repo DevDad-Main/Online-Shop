@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import sendEmail from "../util/mailjet.util.js";
 import crypto from "crypto";
 import { validationResult } from "express-validator";
+import { errorWrapper } from "../util/error.util.js";
 
 //#region Get Login
 export function getLogin(req, res, next) {
@@ -82,7 +83,9 @@ export function postLogin(req, res, next) {
           res.redirect("/login");
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      errorWrapper(next, err);
+    });
 }
 //#endregion
 
@@ -158,7 +161,9 @@ export function postSignup(req, res, next) {
           res.redirect("/signup");
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      errorWrapper(next, err);
+    });
 }
 //#endregion
 
@@ -206,7 +211,8 @@ export function postReset(req, res, next) {
           .catch((err) => {
             console.log(err);
           });
-      });
+      })
+      .catch((err) => errorWrapper(next, err));
   });
 }
 //#endregion
@@ -267,6 +273,8 @@ export function postNewPassword(req, res, next) {
         })
         .catch((err) => console.log(err));
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      errorWrapper(next, err);
+    });
 }
 //#endregion

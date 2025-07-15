@@ -1,9 +1,11 @@
 import { Product } from "../models/product.models.js";
 import { Order } from "../models/order.models.js";
 import Tokens from "csrf";
+import { errorWrapper } from "../util/error.util.js";
 
 const tokens = new Tokens();
 
+//#region Get Products
 export function getProducts(req, res, next) {
   //INFO: Find here does not return us a cursor it returns us all the products
   //WARN: We should turn this into a cursor when working with large amounts of data, or manipulate .find() to limit the data returned using pagination
@@ -17,9 +19,11 @@ export function getProducts(req, res, next) {
         pageTitle: "Shop",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => errorWrapper(next, err));
 }
+//#endregion
 
+//#region Get Product
 export function getProduct(req, res, next) {
   // This has to be exactly the same as we defined in the route :id
   // Allowing us to extract it from the url parameters
@@ -34,9 +38,11 @@ export function getProduct(req, res, next) {
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => errorWrapper(next, err));
 }
+//#endregion
 
+//#region Get Index
 export function getIndex(req, res, next) {
   Product.find()
     .then((products) => {
@@ -47,10 +53,12 @@ export function getIndex(req, res, next) {
       });
     })
     .catch((err) => {
-      console.log(err);
+      errorWrapper(next, err);
     });
 }
+//#endregion
 
+//#region Get Cart
 export async function getCart(req, res, next) {
   await req.user
     .populate("cart.items.productId")
@@ -64,9 +72,11 @@ export async function getCart(req, res, next) {
         products: products,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => errorWrapper(next, err));
 }
+//#endregion
 
+//#region Post Cart
 export function postCart(req, res, next) {
   const prodId = req.body.productId;
   Product.findById(prodId)
@@ -76,11 +86,14 @@ export function postCart(req, res, next) {
     .then((result) => {
       console.log(result);
       res.redirect("/cart");
-    });
+    })
+    .catch((err) => errorWrapper(next, err));
   // Assigning req.user to a newely instantiated object allowing us to access the methods of User.
   // Now we can call methods on req.user
 }
+//#endregion
 
+//#region Post Cart Delete
 export function postCartDeleteProduct(req, res, next) {
   const prodId = req.body.productId;
   req.user
@@ -88,9 +101,13 @@ export function postCartDeleteProduct(req, res, next) {
     .then((result) => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      errorWrapper(next, err);
+    });
 }
+//#endregion
 
+//#region Post Order
 export async function postOrder(req, res, next) {
   await req.user
     .populate("cart.items.productId")
@@ -116,26 +133,27 @@ export async function postOrder(req, res, next) {
     .then(() => {
       res.redirect("/orders"); // Once we have claered the above cart then we redirect
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      errorWrapper(next, err);
+    });
 }
+//#endregion
 
+//#region Get Orders
 export function getOrders(req, res, next) {
   //INFO: Should return us all orders that belong to user that matches the users id (The User logged in)
   Order.find({
     "user.userId": req.user._id,
-  }).then((orders) => {
-    res.render("shop/orders", {
-      path: "/orders",
-      pageTitle: "Your Orders",
-      orders: orders,
+  })
+    .then((orders) => {
+      res.render("shop/orders", {
+        path: "/orders",
+        pageTitle: "Your Orders",
+        orders: orders,
+      });
+    })
+    .catch((err) => {
+      errorWrapper(next, err);
     });
-  });
 }
-
-//
-// exports.getCheckout = (req, res, next) => {
-//   res.render("shop/checkout", {
-//     path: "/checkout",
-//     pageTitle: "Checkout",
-//   });
-// };
+//#endregion
