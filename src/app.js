@@ -1,3 +1,4 @@
+//#region Imports
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -14,6 +15,7 @@ const MongoDBStore = ConnectMongoDBSession(session);
 import dotenv from "dotenv";
 import Tokens from "csrf";
 import flash from "connect-flash";
+//#endregion
 
 dotenv.config();
 
@@ -35,7 +37,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
-    secret: "secret session",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     // Session data now will be saved in our store

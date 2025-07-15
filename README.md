@@ -6,7 +6,6 @@ A scalable backend REST API project built with **Node.js**, **Express.js**, **Mo
 
 ## ✨ Features
 
-- RESTful API design
 - MVC (Model-View-Controller) structure
 - MongoDB integration with Mongoose
 - Environment configuration
@@ -15,17 +14,20 @@ A scalable backend REST API project built with **Node.js**, **Express.js**, **Mo
 - Express middleware usage
 - JSON-based API responses
 
----
-
 ## 📁 Project Structure
 
 <!-- [comment]: Need to Update this later with a nicer image but just to get a glimpse of File Structure, As this grows it will change -->
 
-![File Structure](File-Structure.png)
+![File Structure](FileStructure.png)
 
 ---
 
 ## 🛠️ Technologies Used
+
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![Mongoose](https://img.shields.io/badge/Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white)
 
 #### Node.js – JavaScript runtime
 
@@ -40,6 +42,23 @@ A scalable backend REST API project built with **Node.js**, **Express.js**, **Mo
 #### Nodemon – Development server reloader (dev only)
 
 #### EJS - Embedded JavaScript templating
+
+<br>
+<details>
+<summary>Extra Packages and frameworks used</summary>
+
+- Express-Validator
+</details>
+
+---
+
+🧑‍💻 Author
+
+Olly – Aspiring Junior Backend Developer
+📧 [softwaredevdad@gmail.com]
+🌐 [https://devdad.org]
+
+---
 
 ---
 

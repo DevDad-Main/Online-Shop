@@ -1,30 +1,47 @@
 import { Product } from "../models/product.models.js";
+import { validationResult } from "express-validator";
 
+//#region get Add Product
 export function getAddProduct(req, res, next) {
-  if (!req.session.isLoggedIn) {
-    return res.redirect("/login");
-  }
-  // This wont't specifically move onto the next middleware.
-  // As we need to specify the next keyword;
-  // res.sendFile(path.join(rootDir, "views", "add-product.html"));
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
-    // This can stay like this as this is only sed to highlight
-    // The naviagtion item, the page we are on essentially
     path: "/admin/add-product",
+    hasError: false,
     editing: false,
+    errorMessage: null,
+    validationErrors: [],
   });
-  // console.log(rootDir);
 }
+//#endregion
 
+//#region Post Add Product
 export function postAddProduct(req, res, next) {
-  // Creating our class product here so we can define new products whenver the admin makes one
-
   //TODO: Convert this into a destructured object for readability
-  const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
-  const description = req.body.description;
-  const price = req.body.price;
+  // const title = req.body.title;
+  // const imageUrl = req.body.imageUrl;
+  // const description = req.body.description;
+  // const price = req.body.price;
+
+  const { title, imageUrl, description, price } = req.body;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/edit-product",
+      editing: false,
+      hasError: true,
+      product: {
+        title: title,
+        imageUrl: imageUrl,
+        price: price,
+        description: description,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
 
   const product = new Product({
     title: title,
@@ -46,7 +63,9 @@ export function postAddProduct(req, res, next) {
       console.log(err);
     });
 }
+//#endregion
 
+//#region Get Edit Product
 export function getEditProduct(req, res, next) {
   // This extracted value is always a string so we need to do a check for that also
   const editMode = req.query.edit;
@@ -56,7 +75,7 @@ export function getEditProduct(req, res, next) {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  findById(prodId)
+  Product.findById(prodId)
     .then((product) => {
       if (!product) {
         return res.redirect("/");
@@ -70,17 +89,42 @@ export function getEditProduct(req, res, next) {
         // click the save button, we should try to add the product or edit and update
         editing: editMode,
         product: product,
+        hasError: false,
+        errorMessage: null,
+        validationErrors: [],
       });
     })
     .catch((err) => console.log(err));
 }
+//#endregion
 
+//#region Post Edit Product
 export function postEditProduct(req, res, next) {
   // Retreiving this from the hidden input only if we are in edit mode
   const prodId = req.body.productId;
   const { title, price, imageUrl, description } = req.body;
+  const errors = validationResult(req);
 
-  findById(prodId)
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: true,
+      hasError: true,
+      product: {
+        title: title,
+        imageUrl: imageUrl,
+        price: price,
+        description: description,
+        _id: prodId, // We need to resend the product id, when we refresh it looses its refernece to the item we were editing
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
+
+  Product.findById(prodId)
     .then((product) => {
       if (product.userId.toString() !== req.user._id.toString()) {
         // If we are not the original creator of this product then we they get redirected
@@ -100,7 +144,9 @@ export function postEditProduct(req, res, next) {
     })
     .catch((err) => console.log(err));
 }
+//#endregion
 
+//#region Get Products
 export function getProducts(req, res, next) {
   //INFO: Populate will tell mongoose to populate a certain field with all the detail information and not just the id
   Product.find({
@@ -116,7 +162,9 @@ export function getProducts(req, res, next) {
       });
     });
 }
+//#endregion
 
+//#region Post Delete Product
 export function postDeleteProduct(req, res, next) {
   const prodId = req.body.productId;
 
@@ -130,3 +178,4 @@ export function postDeleteProduct(req, res, next) {
 
   // call back so we only get redirected back to the admin products page once we have successffully deleted a product
 }
+//#endregion
