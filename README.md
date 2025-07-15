@@ -9,9 +9,7 @@
 ![ejs](https://img.shields.io/badge/ejs-000000?style=for-the-badge&logo=ejs&logoColor=white)
 ![nodemon](https://img.shields.io/badge/nodemon-000000?style=for-the-badge&logo=nodemon&logoColor=white)
 
-
 https://github.com/user-attachments/assets/53f59928-56f8-408f-bd16-3527ad26ac45
-
 
 <br>
 
@@ -62,19 +60,26 @@ https://github.com/user-attachments/assets/53f59928-56f8-408f-bd16-3527ad26ac45
 
 - ### Mongoose – MongoDB ODM
 
-#### Dotenv – Environment variable loader
+- ### Dotenv – Environment variable loader
 
-#### Nodemon – Development server reloader (dev only)
+- ### Nodemon – Development server reloader (dev only)
 
-#### EJS - Embedded JavaScript templating
+- ### EJS - Embedded JavaScript templating
+
+- ### Bcrypt.js - Password hashing
+- ### Mailjet - Email service
 
 <br>
 <details>
-<summary>Extra Packages and frameworks used</summary>
+<summary>Extra Packages/Frameworks used</summary>
 <br>
 
-- Express-Validator
-</details>
+- #### [Express-Validator](https://www.npmjs.com/package/express-validator)
+- #### [Express-Validator](https://www.npmjs.com/package/express-validator)
+- #### [CSRF](https://www.npmjs.com/package/csrf)
+- #### [Connect-Flash](https://www.npmjs.com/package/connect-flash)
+- #### [Body-Parser](https://www.npmjs.com/package/body-parser)
+  </details>
 
 ---
 
