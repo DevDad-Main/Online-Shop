@@ -9,6 +9,10 @@
 ![ejs](https://img.shields.io/badge/ejs-000000?style=for-the-badge&logo=ejs&logoColor=white)
 ![nodemon](https://img.shields.io/badge/nodemon-000000?style=for-the-badge&logo=nodemon&logoColor=white)
 
+
+https://github.com/user-attachments/assets/53f59928-56f8-408f-bd16-3527ad26ac45
+
+
 <br>
 
 ### A scalable backend REST API project built with **Node.js**, **Express.js**, **MongoDB**, and **Mongoose** following the **MVC architectural pattern**.
