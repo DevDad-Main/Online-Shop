@@ -1,6 +1,7 @@
-import { errorWrapper } from "../util/error.util.js";
+import { errorWrapper } from "../util/errorWrapper.util.js";
 import { Product } from "../models/product.models.js";
 import { validationResult } from "express-validator";
+import mongoose from "mongoose";
 
 //#region get Add Product
 export function getAddProduct(req, res, next) {

@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import adminRoutes from "./routes/admin.routes.js";
 import shopRoutes from "./routes/shop.routes.js";
 import authRoutes from "./routes/auth.routes.js";
-import errRoutes from "./routes/err.routes.js";
+import { get404, get500 } from "./controllers/error.controllers.js";
 import { User } from "./models/user.models.js";
 import session from "express-session";
 import ConnectMongoDBSession from "connect-mongodb-session";
@@ -59,6 +59,8 @@ app.use(
 // });
 
 app.use((req, res, next) => {
+  //INFO: Inside of sync code we throw errors like so
+  // throw new Error("Dummy");
   if (!req.session.user) {
     return next();
   }
@@ -71,7 +73,8 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => {
-      throw new Error(err);
+      //INFO: Inside on Async code snippets we need to use the error snippets like so
+      next(new Error(err));
     });
 });
 
@@ -91,11 +94,17 @@ app.use(flash());
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-app.use(errRoutes);
+app.use(get404);
+
+app.get("/500", get500);
 
 //NOTE: Error handing middleware that contains 4 args not the standard 3
 app.use((error, req, res, next) => {
-  res.redirect("/500");
+  res.status(500).render("/500", {
+    pageTitle: "Error!",
+    path: "/500",
+    isAuthenticated: req.session.isLoggedIn,
+  });
 });
 
 mongoose

@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import sendEmail from "../util/mailjet.util.js";
 import crypto from "crypto";
 import { validationResult } from "express-validator";
-import { errorWrapper } from "../util/error.util.js";
+import { errorWrapper } from "../util/errorWrapper.util.js";
 
 //#region Get Login
 export function getLogin(req, res, next) {

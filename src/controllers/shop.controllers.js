@@ -1,7 +1,7 @@
 import { Product } from "../models/product.models.js";
 import { Order } from "../models/order.models.js";
 import Tokens from "csrf";
-import { errorWrapper } from "../util/error.util.js";
+import { errorWrapper } from "../util/errorWrapper.util.js";
 
 const tokens = new Tokens();
 
