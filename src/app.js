@@ -100,7 +100,7 @@ app.get("/500", get500);
 
 //NOTE: Error handing middleware that contains 4 args not the standard 3
 app.use((error, req, res, next) => {
-  res.status(500).render("/500", {
+  res.status(500).render("500", {
     pageTitle: "Error!",
     path: "/500",
     isAuthenticated: req.session.isLoggedIn,

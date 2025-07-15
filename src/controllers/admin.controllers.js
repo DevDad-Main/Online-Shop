@@ -1,7 +1,6 @@
 import { errorWrapper } from "../util/errorWrapper.util.js";
 import { Product } from "../models/product.models.js";
 import { validationResult } from "express-validator";
-import mongoose from "mongoose";
 
 //#region get Add Product
 export function getAddProduct(req, res, next) {
@@ -40,7 +39,6 @@ export function postAddProduct(req, res, next) {
   }
 
   const product = new Product({
-    _id: new mongoose.Types.ObjectId("68763a4650b0b994edd4318e"),
     title: title,
     price: price,
     description: description,
@@ -194,7 +192,7 @@ export function postDeleteProduct(req, res, next) {
   const prodId = req.body.productId;
 
   // Now both fields have to match for a user to delete their product
-  Product.deletOne({ _id: prodId, userId: req.user._id })
+  Product.deleteOne({ _id: prodId, userId: req.user._id })
     .then(() => {
       console.log("Destroyed Product");
       res.redirect("/admin/products");
