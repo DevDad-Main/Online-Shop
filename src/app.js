@@ -15,6 +15,7 @@ const MongoDBStore = ConnectMongoDBSession(session);
 import dotenv from "dotenv";
 import Tokens from "csrf";
 import flash from "connect-flash";
+import multer from "multer";
 //#endregion
 
 //#region Const Variables
@@ -30,12 +31,38 @@ const store = new MongoDBStore({
   // Defining a collection where our sessions will be stored
   collection: "sessions",
 });
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true); // Accepting these image types
+  } else {
+    cb(null, false); // Not accepting these image types
+  }
+};
+
 //#endregion
 
 app.set("view engine", "ejs");
 app.set("views", "src/views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+//INFO: Name corresponds to the name of the input field in edit-product view
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image"),
+);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
