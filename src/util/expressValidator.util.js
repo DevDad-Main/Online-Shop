@@ -3,7 +3,6 @@ import { User } from "../models/user.models.js";
 
 export const postAddEditProduct = [
   body("title").isString().isLength({ min: 3 }).trim(),
-  body("imageUrl").isString().trim(),
   body("price").isFloat(),
   body("description").isLength({ min: 5, max: 120 }).trim(),
 ];

@@ -17,7 +17,7 @@ export function getAddProduct(req, res, next) {
 
 //#region Post Add Product
 export function postAddProduct(req, res, next) {
-  const { title, imageUrl, description, price } = req.body;
+  const { title, image, description, price } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -29,7 +29,7 @@ export function postAddProduct(req, res, next) {
       hasError: true,
       product: {
         title: title,
-        imageUrl: imageUrl,
+        imageUrl: image,
         price: price,
         description: description,
       },
