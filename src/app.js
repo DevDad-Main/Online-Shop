@@ -34,10 +34,16 @@ const store = new MongoDBStore({
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "images");
+    cb(null, path.join(__dirname, "images"));
+    // cb(null, __dirname + "images");
   },
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + "-" + file.originalname);
+    cb(
+      null,
+      new Date().toISOString() +
+        "-" +
+        file.originalname.slice(file.originalname.indexOf("/images") + 1),
+    );
   },
 });
 
@@ -64,6 +70,8 @@ app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image"),
 );
 app.use(express.static(path.join(__dirname, "public")));
+// app.use("/images", express.static(path.join(__dirname, "src", "images")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -137,8 +145,9 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.MONGO_URI)
   .then((result) => {
-    app.listen(process.env.PORT, () =>
-      console.log(`Server is listening on ${process.env.PORT}`),
-    );
+    app.listen(process.env.PORT, () => {
+      (console.log(`Server is listening on ${process.env.PORT}`),
+        console.log(path.join(__dirname)));
+    });
   })
   .catch((err) => console.log(err));

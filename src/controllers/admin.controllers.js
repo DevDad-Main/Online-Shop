@@ -21,6 +21,22 @@ export function postAddProduct(req, res, next) {
   const image = req.file;
   console.log(image);
 
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      hasError: true,
+      product: {
+        title: title,
+        price: price,
+        description: description,
+      },
+      errorMessage: "Attached file is not an image",
+      validationErrors: [],
+    });
+  }
+
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -32,14 +48,18 @@ export function postAddProduct(req, res, next) {
       hasError: true,
       product: {
         title: title,
-        imageUrl: image,
         price: price,
+        imageUrl: imageUrl,
         description: description,
       },
       errorMessage: errors.array()[0].msg,
       validationErrors: errors.array(),
     });
   }
+
+  //WARN: We need to split this string due to how our path and project is setup See git commit regarding this.
+  let path = image.path;
+  const imageUrl = path.slice(path.indexOf("/images") + 1);
 
   const product = new Product({
     title: title,
@@ -86,10 +106,8 @@ export function postAddProduct(req, res, next) {
 
 //#region Get Edit Product
 export function getEditProduct(req, res, next) {
-  // This extracted value is always a string so we need to do a check for that also
   const editMode = req.query.edit;
 
-  // Redundant we can remove it later as if we are here in this controller then we are obviously going to want to edit a product
   if (!editMode) {
     return res.redirect("/");
   }
@@ -115,9 +133,6 @@ export function getEditProduct(req, res, next) {
     })
     .catch((err) => {
       errorWrapper(next, err);
-      // const error = new Error(err);
-      // error.httpStatusCode = 500;
-      // return next(error);
     });
 }
 //#endregion
@@ -126,11 +141,12 @@ export function getEditProduct(req, res, next) {
 export function postEditProduct(req, res, next) {
   // Retreiving this from the hidden input only if we are in edit mode
   const prodId = req.body.productId;
-  const { title, price, imageUrl, description } = req.body;
+  const { title, price, description } = req.body;
+  const image = req.file;
+
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log(errors.array());
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Edit Product",
       path: "/admin/edit-product",
@@ -138,7 +154,6 @@ export function postEditProduct(req, res, next) {
       hasError: true,
       product: {
         title: title,
-        imageUrl: imageUrl,
         price: price,
         description: description,
         _id: prodId, // We need to resend the product id, when we refresh it looses its refernece to the item we were editing
@@ -159,7 +174,12 @@ export function postEditProduct(req, res, next) {
       product.title = title;
       product.price = price;
       product.description = description;
-      product.imageUrl = imageUrl;
+      if (image) {
+        //WARN: We need to split this string due to how our path and project is setup See git commit regarding this.
+        let path = image.path;
+        const result = path.slice(path.indexOf("/images") + 1);
+        product.imageUrl = result;
+      }
 
       return product.save().then((result) => {
         console.log("Updated Product");
