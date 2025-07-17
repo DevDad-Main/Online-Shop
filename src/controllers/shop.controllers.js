@@ -1,13 +1,9 @@
 import { Product } from "../models/product.models.js";
 import { Order } from "../models/order.models.js";
-import Tokens from "csrf";
 import { errorWrapper } from "../util/errorWrapper.util.js";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import PDFDocument from "pdfkit";
-
-const __filename = fileURLToPath(import.meta.url);
 
 //#region Get Products
 export function getProducts(req, res, next) {
@@ -199,7 +195,8 @@ export function getInvoice(req, res, next) {
           .fontSize(14)
           .text(p.product.title + " - " + p.quantity + " x " + p.product.price);
       });
-      pdfDoc.text("Total Price: $" + totalPrice);
+      pdfDoc.text("----------------");
+      pdfDoc.fontSize(20).text("Total Price: $" + totalPrice);
       pdfDoc.end();
 
       //#region INFO: Old code only suited for small files but this will cause issues if we have bigger files or have hundreds of requests. Overflow of memory. Switching to streaming the data

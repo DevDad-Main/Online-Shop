@@ -1,6 +1,9 @@
 import { errorWrapper } from "../util/errorWrapper.util.js";
 import { Product } from "../models/product.models.js";
 import { validationResult } from "express-validator";
+import deleteFile from "../util/file.util.js";
+import { ApiError } from "../util/ApiError.util.js";
+import path from "path";
 
 //#region get Add Product
 export function getAddProduct(req, res, next) {
@@ -175,9 +178,10 @@ export function postEditProduct(req, res, next) {
       product.price = price;
       product.description = description;
       if (image) {
+        deleteFile(path.join("src", product.imageUrl));
         //WARN: We need to split this string due to how our path and project is setup See git commit regarding this.
-        let path = image.path;
-        const result = path.slice(path.indexOf("/images") + 1);
+        let imgPath = image.path;
+        const result = imgPath.slice(imgPath.indexOf("/images") + 1);
         product.imageUrl = result;
       }
 
@@ -214,8 +218,17 @@ export function getProducts(req, res, next) {
 export function postDeleteProduct(req, res, next) {
   const prodId = req.body.productId;
 
-  // Now both fields have to match for a user to delete their product
-  Product.deleteOne({ _id: prodId, userId: req.user._id })
+  Product.findById(prodId)
+    .then((product) => {
+      if (!product) {
+        return next(new Error("Product not found"));
+      }
+      // Need to rejoin our path due to us slicing it when we save it
+      deleteFile(path.join("src", product.imageUrl));
+      // Returning the delete one call here so we avoid having a race condition incase the product gets delete before we actually find it
+      return Product.deleteOne({ _id: prodId, userId: req.user._id });
+    })
+
     .then(() => {
       console.log("Destroyed Product");
       res.redirect("/admin/products");
