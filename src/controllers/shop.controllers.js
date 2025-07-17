@@ -5,10 +5,9 @@ import { errorWrapper } from "../util/errorWrapper.util.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import PDFDocument from "pdfkit";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const tokens = new Tokens();
 
 //#region Get Products
 export function getProducts(req, res, next) {
@@ -166,15 +165,66 @@ export function getOrders(req, res, next) {
 //#region Get Invoice
 export function getInvoice(req, res, next) {
   const orderId = req.params.orderId;
-  const invoiceName = "invoice-" + orderId + ".pdf";
-  const invoicePath = path.join("src", "data", "invoices", invoiceName);
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) {
+        return next(new Error("No Order Found"));
+      }
+      if (order.user.userId.toString() !== req.user._id.toString()) {
+        return next(new Error("Unauthorized"));
+      }
 
-  fs.readFile(invoicePath, (err, data) => {
-    if (err) {
-      return next(err);
-    }
-    res.send(data);
-  });
+      // Once we pass the above checks then we know the user is allowed to see the invoice as it is theirs
+      const invoiceName = "invoice-" + orderId + ".pdf";
+      const invoicePath = path.join("src", "data", "invoices", invoiceName);
+
+      const pdfDoc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "inline; filename=" + invoiceName + "",
+      );
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+
+      pdfDoc.fontSize(26).text("Invoice", {
+        underline: true,
+      });
+
+      pdfDoc.text("------------------------------");
+      let totalPrice = 0;
+      order.products.forEach((p) => {
+        totalPrice += p.quantity * p.product.price;
+        pdfDoc
+          .fontSize(14)
+          .text(p.product.title + " - " + p.quantity + " x " + p.product.price);
+      });
+      pdfDoc.text("Total Price: $" + totalPrice);
+      pdfDoc.end();
+
+      //#region INFO: Old code only suited for small files but this will cause issues if we have bigger files or have hundreds of requests. Overflow of memory. Switching to streaming the data
+      // fs.readFile(invoicePath, (err, data) => {
+      //   if (err) {
+      //     return next(err);
+      //   }
+      //   res.setHeader("Content-Type", "application/pdf");
+      //   res.setHeader(
+      //     "Content-Disposition",
+      //     "inline; filename=" + invoiceName + "",
+      //   );
+      //   // res.setHeader(
+      //   //   "Content-Disposition",
+      //   //   'attachment; filename="' + invoiceName + '"',
+      //   // );
+      //   res.send(data);
+      // });
+      //#endregion
+
+      //#region Streaming data
+      // const file = fs.createReadStream(invoicePath);
+      // file.pipe(res);
+      //#endregion
+    })
+    .catch((err) => next(err));
 }
-
 //#endregion

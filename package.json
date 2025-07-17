@@ -26,6 +26,7 @@
     "mongoose": "^8.16.2",
     "multer": "^2.0.1",
     "node-mailjet": "^6.0.8",
+    "pdfkit": "^0.17.1",
     "pug": "^3.0.3"
   },
   "devDependencies": {
