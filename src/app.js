@@ -146,8 +146,7 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then((result) => {
     app.listen(process.env.PORT, () => {
-      (console.log(`Server is listening on ${process.env.PORT}`),
-        console.log(path.join(__dirname)));
+      console.log(`Server is listening on ${process.env.PORT}`);
     });
   })
   .catch((err) => console.log(err));

@@ -9,6 +9,7 @@ import {
   postCartDeleteProduct,
   postOrder,
   getOrders,
+  getInvoice,
 } from "../controllers/shop.controllers.js";
 
 const router = Router();
@@ -19,6 +20,7 @@ router.get("/products", getProducts);
 router.get("/products/:productId", getProduct);
 router.get("/cart", isAuth, getCart);
 router.get("/orders", isAuth, getOrders);
+router.get("/orders/:orderId", isAuth, getInvoice);
 //#endregion
 
 //#region INFO: Post Routes

@@ -2,7 +2,12 @@ import { Product } from "../models/product.models.js";
 import { Order } from "../models/order.models.js";
 import Tokens from "csrf";
 import { errorWrapper } from "../util/errorWrapper.util.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const tokens = new Tokens();
 
 //#region Get Products
@@ -156,4 +161,20 @@ export function getOrders(req, res, next) {
       errorWrapper(next, err);
     });
 }
+//#endregion
+
+//#region Get Invoice
+export function getInvoice(req, res, next) {
+  const orderId = req.params.orderId;
+  const invoiceName = "invoice-" + orderId + ".pdf";
+  const invoicePath = path.join("src", "data", "invoices", invoiceName);
+
+  fs.readFile(invoicePath, (err, data) => {
+    if (err) {
+      return next(err);
+    }
+    res.send(data);
+  });
+}
+
 //#endregion
