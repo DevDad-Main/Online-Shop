@@ -5,6 +5,8 @@ import fs from "fs";
 import path from "path";
 import PDFDocument from "pdfkit";
 
+const ITEMS_PER_PAGE = 2;
+
 //#region Get Products
 export function getProducts(req, res, next) {
   //INFO: Find here does not return us a cursor it returns us all the products
@@ -44,7 +46,14 @@ export function getProduct(req, res, next) {
 
 //#region Get Index
 export function getIndex(req, res, next) {
+  // fetching the page number and then limit amount of data shown
+  const page = req.query.page;
+
   Product.find()
+    // Allows us to skip a certain amount of documents
+    // Taking into account the previous pages
+    .skip((page - 1) * ITEMS_PER_PAGE)
+    .limit(ITEMS_PER_PAGE)
     .then((products) => {
       res.render("shop/index", {
         prods: products,

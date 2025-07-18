@@ -2,7 +2,7 @@ import { errorWrapper } from "../util/errorWrapper.util.js";
 import { Product } from "../models/product.models.js";
 import { validationResult } from "express-validator";
 import deleteFile from "../util/file.util.js";
-import { ApiError } from "../util/ApiError.util.js";
+// import { ApiError } from "../util/ApiError.util.js";
 import path from "path";
 
 //#region get Add Product
