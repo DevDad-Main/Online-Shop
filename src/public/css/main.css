@@ -254,7 +254,7 @@ form {
   margin: 0 1rem;
 }
 
-.padding a:hover .padding a:active {
+.padding a:hover .padding a:active .pagination a.active {
   background: #00695c;
   color: white;
 }

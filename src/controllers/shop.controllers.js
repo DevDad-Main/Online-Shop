@@ -5,20 +5,38 @@ import fs from "fs";
 import path from "path";
 import PDFDocument from "pdfkit";
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 1;
 
 //#region Get Products
 export function getProducts(req, res, next) {
   //INFO: Find here does not return us a cursor it returns us all the products
   //WARN: We should turn this into a cursor when working with large amounts of data, or manipulate .find() to limit the data returned using pagination
+  const page = +req.query.page || 1; // Adding a + to convert to a numbers
+  let totalItems;
+
   Product.find()
+    .countDocuments()
+    .then((numProduct) => {
+      totalItems = numProduct;
+      return (
+        Product.find()
+          // Allows us to skip a certain amount of documents
+          // Taking into account the previous pages
+          .skip((page - 1) * ITEMS_PER_PAGE)
+          .limit(ITEMS_PER_PAGE)
+      );
+    })
     .then((products) => {
-      console.log(products);
       res.render("shop/product-list", {
         prods: products,
-        docTitle: "All Products",
+        pageTitle: "Products",
         path: "/products",
-        pageTitle: "Shop",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => errorWrapper(next, err));
@@ -47,18 +65,32 @@ export function getProduct(req, res, next) {
 //#region Get Index
 export function getIndex(req, res, next) {
   // fetching the page number and then limit amount of data shown
-  const page = req.query.page;
+  const page = +req.query.page || 1; // Adding a + to convert to a numbers
+  let totalItems;
 
   Product.find()
-    // Allows us to skip a certain amount of documents
-    // Taking into account the previous pages
-    .skip((page - 1) * ITEMS_PER_PAGE)
-    .limit(ITEMS_PER_PAGE)
+    .countDocuments()
+    .then((numProduct) => {
+      totalItems = numProduct;
+      return (
+        Product.find()
+          // Allows us to skip a certain amount of documents
+          // Taking into account the previous pages
+          .skip((page - 1) * ITEMS_PER_PAGE)
+          .limit(ITEMS_PER_PAGE)
+      );
+    })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
-        path: "/",
         pageTitle: "Shop",
+        path: "/",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
