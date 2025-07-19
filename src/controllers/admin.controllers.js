@@ -214,9 +214,9 @@ export function getProducts(req, res, next) {
 }
 //#endregion
 
-//#region Post Delete Product
-export function postDeleteProduct(req, res, next) {
-  const prodId = req.body.productId;
+//#region Delete Product
+export function deleteProduct(req, res, next) {
+  const prodId = req.params.productId;
 
   Product.findById(prodId)
     .then((product) => {
@@ -231,10 +231,13 @@ export function postDeleteProduct(req, res, next) {
 
     .then(() => {
       console.log("Destroyed Product");
-      res.redirect("/admin/products");
+      res.status(200).json({
+        message: "Deleted product successfully",
+      });
     })
-    .catch((err) => errorWrapper(next, err));
-
+    .catch((err) =>
+      res.status(500).json({ message: "deleting product failed" }),
+    );
   // call back so we only get redirected back to the admin products page once we have successffully deleted a product
 }
 //#endregion
