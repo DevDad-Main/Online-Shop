@@ -9,15 +9,11 @@
 ![ejs](https://img.shields.io/badge/ejs-000000?style=for-the-badge&logo=ejs&logoColor=white)
 ![nodemon](https://img.shields.io/badge/nodemon-000000?style=for-the-badge&logo=nodemon&logoColor=white)
 
-
-
 https://github.com/user-attachments/assets/728512fc-9dbf-4d7e-9ee3-3d5adba13be3
-
-
 
 <br>
 
-### A scalable backend REST API project built with **Node.js**, **Express.js**, **MongoDB**, and **Mongoose** following the **MVC architectural pattern**.
+### A scalable backend SSR project built with **Node.js**, **Express.js**, **MongoDB**, and **Mongoose** following the **MVC architectural pattern**.
 
 ---
 
@@ -30,6 +26,7 @@ https://github.com/user-attachments/assets/728512fc-9dbf-4d7e-9ee3-3d5adba13be3
 - ### Centralized error handling
 - ### Express middleware usage
 - ### SSR (Server-Side Rendering)
+- ### Stripe payment integration
 <br>
 
 ---
@@ -48,7 +45,15 @@ https://github.com/user-attachments/assets/728512fc-9dbf-4d7e-9ee3-3d5adba13be3
 
 <summary> 📁 MongoDB-Compass </summary>
 
-## ![File Structure](previews/Compass-Shop-Database.png)
+![File Structure](previews/Compass-Shop-Database.png)
+
+</details>
+
+<details>
+
+<summary> 📄 Pagination </summary>
+
+![File Structure](previews/Pagination.png)
 
 </details>
 
@@ -93,7 +98,7 @@ Olly – Aspiring Junior Backend Developer
 
 📧 softwaredevdad@gmail.com
 
-🌐 https://devdad.org
+<!-- 🌐 https://devdad.org -->
 
 ---
 
