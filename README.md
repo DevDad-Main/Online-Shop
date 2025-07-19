@@ -9,7 +9,11 @@
 ![ejs](https://img.shields.io/badge/ejs-000000?style=for-the-badge&logo=ejs&logoColor=white)
 ![nodemon](https://img.shields.io/badge/nodemon-000000?style=for-the-badge&logo=nodemon&logoColor=white)
 
-https://github.com/user-attachments/assets/53f59928-56f8-408f-bd16-3527ad26ac45
+
+
+https://github.com/user-attachments/assets/728512fc-9dbf-4d7e-9ee3-3d5adba13be3
+
+
 
 <br>
 
