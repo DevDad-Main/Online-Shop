@@ -4,13 +4,19 @@ import { errorWrapper } from "../util/errorWrapper.util.js";
 import fs from "fs";
 import path from "path";
 import PDFDocument from "pdfkit";
+import dotenv from "dotenv";
+import Stripe from "stripe";
 
+dotenv.config();
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const ITEMS_PER_PAGE = 1;
 
 //#region Get Products
 export function getProducts(req, res, next) {
   //INFO: Find here does not return us a cursor it returns us all the products
   //WARN: We should turn this into a cursor when working with large amounts of data, or manipulate .find() to limit the data returned using pagination
+  //
   const page = +req.query.page || 1; // Adding a + to convert to a numbers
   let totalItems;
 
@@ -173,6 +179,89 @@ export async function postOrder(req, res, next) {
     })
     .then(() => {
       res.redirect("/orders"); // Once we have claered the above cart then we redirect
+    })
+    .catch((err) => {
+      errorWrapper(next, err);
+    });
+}
+//#endregion
+
+//#region Get Checkout Success
+export async function getCheckoutSuccess(req, res, next) {
+  await req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      console.log(user.cart.items);
+      //INFO: Remapping our returned products to a newer easier to work with object as everything is nested differently to what the order fields require
+      const products = user.cart.items.map((i) => {
+        //INFO: Using the _doc mongoose gives us to all of the data inside, spread operator to pull out all of the data and store it in a new object
+        return { quantity: i.quantity, product: { ...i.productId._doc } };
+      });
+      const order = new Order({
+        user: {
+          email: req.user.email,
+          userId: req.user._id, // mongoose picks the id automatically
+        },
+        products: products,
+      });
+      return order.save();
+    })
+    .then((results) => {
+      return req.user.clearCart();
+    })
+    .then(() => {
+      res.redirect("/orders"); // Once we have claered the above cart then we redirect
+    })
+    .catch((err) => {
+      errorWrapper(next, err);
+    });
+}
+//#endregion
+
+//#region Get Checkout
+export async function getCheckout(req, res, next) {
+  let products;
+  let total = 0;
+  await req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      products = user.cart.items;
+      total = 0;
+      products.forEach((p) => {
+        total += p.quantity * p.productId.price;
+      });
+
+      return stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        mode: "payment",
+        line_items: products.map((p) => {
+          return {
+            price_data: {
+              currency: "gbp",
+              unit_amount: p.productId.price * 100,
+              product_data: {
+                name: p.productId.title,
+                description: p.productId.description,
+              },
+            },
+            quantity: p.quantity,
+          };
+        }),
+        customer_email: req.user.email,
+        success_url:
+          req.protocol + "://" + req.get("host") + "/checkout/success",
+        cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancel",
+      });
+    })
+    .then((session) => {
+      res.render("shop/checkout", {
+        path: "/checkout",
+        pageTitle: "Checkout",
+        totalSum: total,
+        products: products,
+        pk_test_key: process.env.STRIPE_PUBLISHABLE_KEY,
+        sessionId: session.id,
+      });
     })
     .catch((err) => {
       errorWrapper(next, err);
