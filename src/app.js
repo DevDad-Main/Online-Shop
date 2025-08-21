@@ -1,4 +1,3 @@
-//#region Imports
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -11,13 +10,13 @@ import { get404, get500 } from "./controllers/error.controllers.js";
 import { User } from "./models/user.models.js";
 import session from "express-session";
 import ConnectMongoDBSession from "connect-mongodb-session";
-const MongoDBStore = ConnectMongoDBSession(session);
 import dotenv from "dotenv";
 import Tokens from "csrf";
 import flash from "connect-flash";
 import multer from "multer";
 import helmet from "helmet";
-//#endregion
+import compression from "compression";
+import morgan from "morgan";
 
 //#region Const Variables
 dotenv.config();
@@ -26,6 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const tokens = new Tokens();
 
+const MongoDBStore = ConnectMongoDBSession(session);
 const app = express();
 const store = new MongoDBStore({
   uri: process.env.MONGO_URI,
@@ -66,6 +66,8 @@ app.set("view engine", "ejs");
 app.set("views", "src/views");
 
 app.use(helmet());
+app.use(compression());
+app.use(morgan("combined"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 //INFO: Name corresponds to the name of the input field in edit-product view
