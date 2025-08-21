@@ -8,7 +8,8 @@
   "main": "src/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/app.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -22,6 +23,7 @@
     "express-handlebars": "3.0",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.2",
     "multer": "^2.0.1",

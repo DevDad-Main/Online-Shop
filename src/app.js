@@ -16,6 +16,7 @@ import dotenv from "dotenv";
 import Tokens from "csrf";
 import flash from "connect-flash";
 import multer from "multer";
+import helmet from "helmet";
 //#endregion
 
 //#region Const Variables
@@ -63,6 +64,8 @@ const fileFilter = (req, file, cb) => {
 
 app.set("view engine", "ejs");
 app.set("views", "src/views");
+
+app.use(helmet());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 //INFO: Name corresponds to the name of the input field in edit-product view
@@ -145,7 +148,7 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.MONGO_URI)
   .then((result) => {
-    app.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT || 3000, () => {
       console.log(`Server is listening on ${process.env.PORT}`);
     });
   })
