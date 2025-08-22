@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import bodyParser from "body-parser";
+import fs from "fs";
 import mongoose from "mongoose";
 import adminRoutes from "./routes/admin.routes.js";
 import shopRoutes from "./routes/shop.routes.js";
@@ -17,6 +18,7 @@ import multer from "multer";
 import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
+import https from "https";
 
 //#region Const Variables
 dotenv.config();
@@ -32,6 +34,11 @@ const store = new MongoDBStore({
   // Defining a collection where our sessions will be stored
   collection: "sessions",
 });
+
+//NOTE: This will block code execution until the file is read,
+//      Normally we don't want this behavior but we need this to execute before the server is read
+const privateKey = fs.readFileSync("server.key");
+const certificate = fs.readFileSync("server.cert");
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -65,9 +72,14 @@ const fileFilter = (req, file, cb) => {
 app.set("view engine", "ejs");
 app.set("views", "src/views");
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }, // Appends data to the exisiting log file
+);
+
 app.use(helmet());
 app.use(compression());
-app.use(morgan("combined"));
+app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 //INFO: Name corresponds to the name of the input field in edit-product view
@@ -150,6 +162,8 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.MONGO_URI)
   .then((result) => {
+    https;
+    // .createServer({ key: privateKey, cert: certificate }, app)
     app.listen(process.env.PORT || 3000, () => {
       console.log(`Server is listening on ${process.env.PORT}`);
     });
